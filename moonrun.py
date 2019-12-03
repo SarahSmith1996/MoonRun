@@ -32,16 +32,12 @@ Mohammad:
 - Collisions/platforms
 
 Jonas:
-- Commenting -> OOP optimziation
-- GIT repository
-- scoreboard
 - walking function
 
 
 OPTIMIZE CODE:
 - OOP optimization 
     - class variables change self to classname?
-    - make player class subclass of element? maybe not
     - 'stuff' subclass of elements (draw function in element class)?
     - class for text with draw method??
 - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
@@ -75,6 +71,7 @@ TO FIX:
 # general initiation
 import pygame
 import random
+import pickle
 
 pygame.init()
 
@@ -156,18 +153,37 @@ class player (object):
         
         self.maxjumpheight = 13
 
-    def moving(self, direction):
-        if direction == 0:
-            self.left = True
-            self.x -= self.vel
-        else:
-            self.left = False
-            self.x += self.vel
-        
-        if not self.isJump:
-            self.move = True
-            step.play()
 
+    
+    #delete self.left
+    def moving(self, leftB, rightB, jumpB):
+        
+        if self.alive:
+            if leftB:
+                self.left = True
+                self.x -= self.vel
+                if not self.isJump:
+                    self.move = True
+                    step.play()
+
+            elif rightB:
+                self.left = False
+                self.x += self.vel
+                if not self.isJump:
+                    self.move = True
+                    step.play()
+            
+            else: 
+                self.move = False
+
+            if not self.isJump:
+                if jumpB:
+                    self.isJump = True
+                    self.move = False
+                
+            else:
+                self.jump()
+    
     def jump (self):
         if self.jumpCount >= -self.jumpheight:
             self.neg = 1
@@ -208,15 +224,9 @@ class player (object):
                 window.blit(self.standimg, (self.x,self.y))
             else:
                 window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
-        
+    
+    #should maybe move to item class, ideally use sprites instead
     def collision(self):
-        """
-        #above
-        if self.x+self.width > other.x and self.x < other.x + other.width:
-            if self.y >= other.y-other.height:
-                self.ontop = True
-        """
-        #left
 
         #item
         for item in itemlist:
@@ -256,12 +266,13 @@ class backdrop (element):
         else:
             self.x = 0
         
-class stuff (element):
+class displayObject (element):
 
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-class Item (stuff):
+
+class Item (displayObject):
 
 
     def draw(self,window,secimg):
@@ -280,12 +291,11 @@ class scoreboard (object):
         self.scoreList += [newscore]
         self.scoreList = sorted(self.scoreList,reverse=True)
         self.scoreList.pop(self.LENGTH+1)
-        print(self.scoreList)
 
     def reset(self):
         for i in range(self.LENGTH):
             self.scoreList[i] = 0
-        print(self.scoreList)
+
 
 def redrawGameWindow():
     window.blit(night,(0,0)) #draws background (starry night)
@@ -306,6 +316,31 @@ def redrawGameWindow():
     for player in playerlist:
         player.draw(window)
 
+def createAndMove(typ,lst,listLimit,randLimit):
+    for obj in lst:
+        if obj.x <= -obj.width:
+            lst.pop(lst.index(obj))
+
+    #make random objects
+    objget=random.randint(0,randLimit)
+    if objget == 0 and len(lst)<listLimit:
+        if typ == "h":
+            x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
+        elif typ == "m":
+            x = displayObject(winwidth,0,worldvel,'meteorite.png',64,64)
+            fall.play()
+        elif typ == "i":
+            if pygame.time.get_ticks()%2 == 0:
+                x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
+            else:
+                x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
+        #add to objectlist
+        lst += [x]
+    #move objects at their velocity
+    for obj in lst:
+        obj.x -= obj.vel
+
+
 def reset():
     global holelist
     global meteolist
@@ -316,6 +351,7 @@ def reset():
     global replay
     global playerlist
     global itemlist
+    global highget
     
     holelist=[]
     meteolist=[]
@@ -323,6 +359,7 @@ def reset():
     gameovercount=0
     winner=0
     playtime=0
+    highget = True
     end = False
     replay = False
     for player in playerlist:
@@ -341,16 +378,26 @@ def reset():
     pygame.mixer.music.play(-1,0.0)
 
 
-
 #class instances
 title = backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = backdrop(0,0,worldvel/4,'hills_bg.png',800,400)
 bd2 = backdrop(0,0,worldvel/2,'hills_fg.png',800,400)
 
-lunar = stuff(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
+lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
 player1 = player(winwidth//2,winheight-80,64,64, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),winheight-80,64,64, p2move, p2stand, p2jump, 'Player 2')
+
+#crashes when file is empty
+try:
+    file = open("highscore.hs","rb")
+    highscore = pickle.load(file)
+    file.close()
+except FileNotFoundError:
+    highscore = scoreboard([0,0,0,0,0])
+except EOFError:
+    highscore = scoreboard([0,0,0,0,0])
+
 
 #start conditions
 itemlist=[]
@@ -365,7 +412,8 @@ replay = False
 menu = True
 second_menu = False
 twoplayer = False
-
+highget = True
+firstrun = True
 
 #music for main game
 pygame.mixer.music.load('music.mp3')
@@ -481,37 +529,14 @@ while run:
         lunar.x -= worldvel
     else: 
         lunar.x = winwidth
-
-
-    #remove holes
-    for hole in holelist:
-        if hole.x <= -hole.width:
-            holelist.pop(holelist.index(hole))
-
-    #make random holes in floor
-    holeget=random.randint(0,50)
-    if holeget == 0 and len(holelist)<1:
-        x = stuff(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
-        holelist += [x]
-        
-    for holes in holelist:
-        holes.x -= holes.vel
     
-    #remove meteor
-    for meteo in meteolist:
-        if meteo.x <= -meteo.width:
-            meteolist.pop(meteolist.index(meteo))
-   
-    #create random meteorite 
-    meteoget=random.randint(0,100)
-    
-    if meteoget == 0 and len(meteolist)<3:
-        y = stuff(winwidth,0,worldvel,'meteorite.png',64,64)
-        fall.play()
-        meteolist += [y]   
+    #randomly generate and move holes, meteors and items
+    createAndMove('h',holelist,1,50)
+    createAndMove('m',meteolist,3,100)
+    createAndMove('i',itemlist,1,200)
         
+    #meteorite animation    
     for meteo in meteolist:
-        meteo.x -= meteo.vel
         if meteo.y == winheight - 80 - 4*meteo.vel:
             crash.play()
         if meteo.y < winheight - 80:
@@ -521,67 +546,13 @@ while run:
                 if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
                     meteo.y += 4*meteo.vel
             meteo.img='meteoriteb.png'
-
-    #remove items
-    for item in itemlist:
-        if item.x <= -item.width:
-            itemlist.pop(itemlist.index(item))
-
-    #make random items
-    itemget=random.randint(0,200)
-    if itemget == 0 and len(itemlist)<1:
-        x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
-        itemlist += [x]
-    if itemget == 1 and len(itemlist)<1:
-        x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
-        itemlist += [x]
-        
-    for item in itemlist:
-        item.x -= item.vel
-
-
+    
     #player control
     keys = pygame.key.get_pressed()
-
-    #player 1 control
-    if player1.alive:
-        if keys[pygame.K_LEFT]:
-            player1.moving(0)
-
-        elif keys[pygame.K_RIGHT]:
-            player1.moving(1)
-        
-        else: 
-            player1.move = False
-
-        if not player1.isJump:
-            if keys[pygame.K_UP]:
-                player1.isJump = True
-                player1.move = False
-            
-        else:
-            player1.jump()
-
-    #player 2 control
+    player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
     if twoplayer:
-        if player2.alive:
-            if keys[pygame.K_a]:
-                player2.moving(0)
+        player2.moving(keys[pygame.K_a],keys[pygame.K_d],keys[pygame.K_w])
 
-            elif keys[pygame.K_d]:
-                player2.moving(1)
-                
-            else: 
-                player2.move = False
-
-            if not(player2.isJump):
-                if keys[pygame.K_w]:
-                    player2.isJump = True
-                    player2.move = False
-                    
-            else:
-                player2.jump()
-    
     #pause game
     if keys[pygame.K_p]:
         select.play()
@@ -628,7 +599,7 @@ while run:
             pygame.display.update()
             continue
 
-    #player death, fix issue: p2 can't move after p1 dies
+    #player death
     for player in playerlist:
         for hole in holelist:
             if player.x > hole.x + 5 and player.x < hole.x+250-player.width and player.y >= winheight-84:
@@ -651,11 +622,13 @@ while run:
     
     if not twoplayer:
         if not player1.alive:
-            score = playtime
+            myscore = playtime
             gameovercount += 1
+            if highget:
+                highscore.addscore(myscore)
+                highget = False
         if player1.alive:
-            playtime += 1
-            # more elegant but not resettable: playtime = pygame.time.get_ticks() // 1000 
+            playtime += 1 
         timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
         window.blit(timer, (705,20))
         pygame.display.update()
@@ -695,17 +668,15 @@ while run:
                 winner.x = winwidth/2 -winner.width/2
                 winner.y = winheight/2
                 winner.draw(window)
-                #for still image:
-                #window.blit(winner.standimg, (winwidth/2-winner.width/2, winheight/2))
                 window.blit(winnername, (260,300))
             else:
                 if not twoplayer:
-                    newscore = smallfont.render("Your Score:  "+str(score).zfill(4), 1, (255,201,14))
+                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,201,14))
                     window.blit(newscore, (260,300))
                 else:
                     winnername = smallfont.render("Did you do that on purpose?", 1, (255,201,14))
                     window.blit(winnername, (180,300))
-            pygame.display.update()
+            
             
             if keys[pygame.K_r]:
                 select.play()
@@ -720,14 +691,27 @@ while run:
                 menu = True
                 endrun = False
 
+            if keys[pygame.K_h]:
+                pygame.draw.rect(window,(255,201,14),(winwidth/2-200,winheight/2-150,400,300))
+                linecount = 0
+                for score in highscore.scoreList:
+                    linecount += 1
+                    window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (350,100+linecount*40))
+
             if keys[pygame.K_ESCAPE]:
                 run = False
                 endrun = False
+            
+            pygame.display.update()
 
             #leave game 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     endrun = False 
                     run = False
+
+file = open("highscore.hs","wb")
+pickle.dump(highscore,file)
+file.close()
 
 pygame.quit()
