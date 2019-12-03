@@ -249,12 +249,13 @@ class backdrop (element):
         else:
             self.x = 0
         
-class stuff (element):
+class displayObject (element):
 
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-class Item (stuff):
+
+class Item (displayObject):
 
 
     def draw(self,window,secimg):
@@ -299,6 +300,31 @@ def redrawGameWindow():
     for player in playerlist:
         player.draw(window)
 
+def createAndMove(typ,lst,listLimit,randLimit):
+    for obj in lst:
+        if obj.x <= -obj.width:
+            lst.pop(lst.index(obj))
+
+    #make random objects
+    objget=random.randint(0,randLimit)
+    if objget == 0 and len(lst)<listLimit:
+        if typ == "h":
+            x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
+        elif typ == "m":
+            x = displayObject(winwidth,0,worldvel,'meteorite.png',64,64)
+            fall.play()
+        elif typ == "i":
+            if pygame.time.get_ticks()%2 == 0:
+                x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
+            else:
+                x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
+
+        lst += [x]
+
+    for obj in lst:
+        obj.x -= obj.vel
+
+
 def reset():
     global holelist
     global meteolist
@@ -336,13 +362,12 @@ def reset():
     pygame.mixer.music.play(-1,0.0)
 
 
-
 #class instances
 title = backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = backdrop(0,0,worldvel/4,'hills_bg.png',800,400)
 bd2 = backdrop(0,0,worldvel/2,'hills_fg.png',800,400)
 
-lunar = stuff(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
+lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
 player1 = player(winwidth//2,winheight-80,64,64, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),winheight-80,64,64, p2move, p2stand, p2jump, 'Player 2')
@@ -427,36 +452,12 @@ while run:
     else: 
         lunar.x = winwidth
 
-
-    #remove holes
-    for hole in holelist:
-        if hole.x <= -hole.width:
-            holelist.pop(holelist.index(hole))
-
-    #make random holes in floor
-    holeget=random.randint(0,50)
-    if holeget == 0 and len(holelist)<1:
-        x = stuff(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
-        holelist += [x]
+    createAndMove('h',holelist,1,50)
+    createAndMove('m',meteolist,3,100)
+    createAndMove('i',itemlist,1,200)
         
-    for holes in holelist:
-        holes.x -= holes.vel
-    
-    #remove meteor
+    #meteorite animation    
     for meteo in meteolist:
-        if meteo.x <= -meteo.width:
-            meteolist.pop(meteolist.index(meteo))
-   
-    #create random meteorite 
-    meteoget=random.randint(0,100)
-    
-    if meteoget == 0 and len(meteolist)<3:
-        y = stuff(winwidth,0,worldvel,'meteorite.png',64,64)
-        fall.play()
-        meteolist += [y]   
-        
-    for meteo in meteolist:
-        meteo.x -= meteo.vel
         if meteo.y == winheight - 80 - 4*meteo.vel:
             crash.play()
         if meteo.y < winheight - 80:
@@ -466,24 +467,6 @@ while run:
                 if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
                     meteo.y += 4*meteo.vel
             meteo.img='meteoriteb.png'
-
-    #remove items
-    for item in itemlist:
-        if item.x <= -item.width:
-            itemlist.pop(itemlist.index(item))
-
-    #make random items
-    itemget=random.randint(0,200)
-    if itemget == 0 and len(itemlist)<1:
-        x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
-        itemlist += [x]
-    if itemget == 1 and len(itemlist)<1:
-        x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
-        itemlist += [x]
-        
-    for item in itemlist:
-        item.x -= item.vel
-
 
     #player control
     keys = pygame.key.get_pressed()
@@ -663,7 +646,7 @@ while run:
                 endrun = False
             
             pygame.display.update()
-            
+
             #leave game 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
