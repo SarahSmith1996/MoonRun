@@ -216,15 +216,9 @@ class player (object):
                 window.blit(self.standimg, (self.x,self.y))
             else:
                 window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
-        
+    
+    #should maybe move to item class, ideally use sprites instead
     def collision(self):
-        """
-        #above
-        if self.x+self.width > other.x and self.x < other.x + other.width:
-            if self.y >= other.y-other.height:
-                self.ontop = True
-        """
-        #left
 
         #item
         for item in itemlist:
@@ -332,9 +326,9 @@ def createAndMove(typ,lst,listLimit,randLimit):
                 x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
             else:
                 x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
-
+        #add to objectlist
         lst += [x]
-
+    #move objects at their velocity
     for obj in lst:
         obj.x -= obj.vel
 
@@ -393,6 +387,8 @@ try:
     file.close()
 except FileNotFoundError:
     highscore = scoreboard([0,0,0,0,0])
+except EOFError:
+    highscore = scoreboard([0,0,0,0,0])
 
 
 #start conditions
@@ -408,7 +404,7 @@ replay = False
 menu = True
 twoplayer = False
 highget = True
-
+firstrun = True
 
 #music for main game
 pygame.mixer.music.load('music.mp3')
