@@ -32,16 +32,12 @@ Mohammad:
 - Collisions/platforms
 
 Jonas:
-- Commenting -> OOP optimziation
-- GIT repository
-- scoreboard
 - walking function
 
 
 OPTIMIZE CODE:
 - OOP optimization 
     - class variables change self to classname?
-    - make player class subclass of element? maybe not
     - 'stuff' subclass of elements (draw function in element class)?
     - class for text with draw method??
 - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
@@ -149,18 +145,37 @@ class player (object):
         
         self.maxjumpheight = 13
 
-    def moving(self, direction):
-        if direction == 0:
-            self.left = True
-            self.x -= self.vel
-        else:
-            self.left = False
-            self.x += self.vel
-        
-        if not self.isJump:
-            self.move = True
-            step.play()
 
+    
+    #delete self.left
+    def moving(self, leftB, rightB, jumpB):
+        
+        if self.alive:
+            if leftB:
+                self.left = True
+                self.x -= self.vel
+                if not self.isJump:
+                    self.move = True
+                    step.play()
+
+            elif rightB:
+                self.left = False
+                self.x += self.vel
+                if not self.isJump:
+                    self.move = True
+                    step.play()
+            
+            else: 
+                self.move = False
+
+            if not self.isJump:
+                if jumpB:
+                    self.isJump = True
+                    self.move = False
+                
+            else:
+                self.jump()
+    
     def jump (self):
         if self.jumpCount >= -self.jumpheight:
             self.neg = 1
@@ -274,12 +289,11 @@ class scoreboard (object):
         self.scoreList += [newscore]
         self.scoreList = sorted(self.scoreList,reverse=True)
         self.scoreList.pop(self.LENGTH+1)
-        print(self.scoreList)
 
     def reset(self):
         for i in range(self.LENGTH):
             self.scoreList[i] = 0
-        print(self.scoreList)
+
 
 def redrawGameWindow():
     window.blit(night,(0,0)) #draws background (starry night)
@@ -451,7 +465,8 @@ while run:
         lunar.x -= worldvel
     else: 
         lunar.x = winwidth
-
+    
+    #randomly generate and move holes, meteors and items
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,3,100)
     createAndMove('i',itemlist,1,200)
@@ -467,49 +482,13 @@ while run:
                 if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
                     meteo.y += 4*meteo.vel
             meteo.img='meteoriteb.png'
-
+    
     #player control
     keys = pygame.key.get_pressed()
-
-    #player 1 control
-    if player1.alive:
-        if keys[pygame.K_LEFT]:
-            player1.moving(0)
-
-        elif keys[pygame.K_RIGHT]:
-            player1.moving(1)
-        
-        else: 
-            player1.move = False
-
-        if not player1.isJump:
-            if keys[pygame.K_UP]:
-                player1.isJump = True
-                player1.move = False
-            
-        else:
-            player1.jump()
-
-    #player 2 control
+    player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
     if twoplayer:
-        if player2.alive:
-            if keys[pygame.K_a]:
-                player2.moving(0)
+        player2.moving(keys[pygame.K_a],keys[pygame.K_d],keys[pygame.K_w])
 
-            elif keys[pygame.K_d]:
-                player2.moving(1)
-                
-            else: 
-                player2.move = False
-
-            if not(player2.isJump):
-                if keys[pygame.K_w]:
-                    player2.isJump = True
-                    player2.move = False
-                    
-            else:
-                player2.jump()
-    
     #pause game
     if keys[pygame.K_p]:
         select.play()
@@ -539,7 +518,7 @@ while run:
             pygame.display.update()
             continue
 
-    #player death, fix issue: p2 can't move after p1 dies
+    #player death
     for player in playerlist:
         for hole in holelist:
             if player.x > hole.x + 5 and player.x < hole.x+250-player.width and player.y >= winheight-84:
@@ -568,8 +547,7 @@ while run:
                 highscore.addscore(myscore)
                 highget = False
         if player1.alive:
-            playtime += 1
-            # more elegant but not resettable: playtime = pygame.time.get_ticks() // 1000 
+            playtime += 1 
         timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
         window.blit(timer, (705,20))
         pygame.display.update()
@@ -609,8 +587,6 @@ while run:
                 winner.x = winwidth/2 -winner.width/2
                 winner.y = winheight/2
                 winner.draw(window)
-                #for still image:
-                #window.blit(winner.standimg, (winwidth/2-winner.width/2, winheight/2))
                 window.blit(winnername, (260,300))
             else:
                 if not twoplayer:
