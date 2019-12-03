@@ -46,14 +46,12 @@ OPTIMIZE CODE:
     - also auto align on screen score with this
 - max score?? 999.999?
 - player shouldnt be able to run too far to the right
+- step sounds don't match walking speed
 - change jump so player can jump on objects and item works
 
 
 OPTIMIZE GAME:
-- different sounds for both players?
-- smoother walking with list index division
 - add shooting star
-- pause menu same key
 
 TO FIX: 
 - sounds drown each other out
@@ -196,7 +194,7 @@ class player (object):
 
     def draw(self, window):
         if self.move:
-            if self.step + 1 > 8:
+            if self.step + 1 > 16:
                 self.step = 0
             if not self.left: 
                 window.blit(self.movelist[self.step//2], (self.x,self.y))
@@ -359,6 +357,7 @@ class Text: #### creating the text class
             return False
 
 def reset():
+    global worldvel
     global holelist
     global meteolist
     global gameovercount
@@ -369,13 +368,16 @@ def reset():
     global playerlist
     global itemlist
     global highget
+    global speedcount
     
+    worldvel = 8
     holelist=[]
     meteolist=[]
     itemlist=[]
     gameovercount=0
     winner=0
     playtime=0
+    speedcount = 0
     highget = True
     end = False
     replay = False
@@ -424,6 +426,7 @@ playerlist = [player1]
 gameovercount = 0
 winner = 0
 playtime = 0
+speedcount = 0
 end = False
 replay = False
 menu = True
@@ -554,14 +557,14 @@ while run:
         
     #meteorite animation    
     for meteo in meteolist:
-        if meteo.y == winheight - 80 - 4*meteo.vel:
+        if meteo.y == winheight - 80 - 32:
             crash.play()
         if meteo.y < winheight - 80:
-            meteo.y += 4*meteo.vel
+            meteo.y += 32
         else:
             for hole in holelist:
                 if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
-                    meteo.y += 4*meteo.vel
+                    meteo.y += 32
             meteo.img='meteoriteb.png'
     
     #player control
@@ -630,6 +633,14 @@ while run:
             death.play()
             player.alive = False
             player.y += 2000
+
+    #speed up
+    speedcount += 1
+    if speedcount % 500 == 0:
+        worldvel *= 1.5
+        select.play()
+    player1.vel = worldvel
+    player2.vel = worldvel
 
 
     #game over 
