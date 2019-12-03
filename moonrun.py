@@ -339,7 +339,29 @@ def createAndMove(typ,lst,listLimit,randLimit):
     #move objects at their velocity
     for obj in lst:
         obj.x -= obj.vel
+        
+class Text: #### creating the text class
+    
+    def __init__(self, x, y, text, font, fontsize, colour):
+        self.x  = x
+        self.y = y
+        self.text = text
+        self.fontsize = fontsize
+        self.colour = colour
+        self.font = pygame.font.Font(font, self.fontsize) # creating the font
+        self.textsurf = self.font.render(self.text, True, self.colour) # creating the text surface
+        self.rect = self.textsurf.get_rect() # creating the rectangle for the text
 
+    
+    def show_text(self): # method to show the text
+        self.rect.center = (self.x,self.y) # Puts the center of the text at the x and y co ordinates
+        window.blit(self.textsurf,self.rect) # prints one surface onto another
+        
+    def mouse_over(self): # checks whether the mouse is over a the text
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            return True
+        else:
+            return False
 
 def reset():
     global holelist
