@@ -262,22 +262,22 @@ class Item (stuff):
         else:
             window.blit(pygame.image.load(secimg),(self.x,self.y))
 
-"""
 class scoreboard (object):
-    LENGTH = 5
+    LENGTH = 4
 
     def __init__(self,scoreList):
         self.scoreList = scoreList
     
     def addscore(self,newscore):
-        for i in scoreList:
-            if newscore > i:
-                if i < LENGTH:
-
-                scoreList[i] = newscore
+        self.scoreList += [newscore]
+        self.scoreList = sorted(self.scoreList,reverse=True)
+        self.scoreList.pop(self.LENGTH+1)
+        print(self.scoreList)
 
     def reset(self):
-"""
+        for i in range(self.LENGTH):
+            self.scoreList[i] = 0
+        print(self.scoreList)
 
 def redrawGameWindow():
     window.blit(night,(0,0)) #draws background (starry night)
