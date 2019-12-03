@@ -79,8 +79,8 @@ import random
 pygame.init()
 
 
-import os
-os.chdir(r'C:\Users\jonas\Desktop\MoonRun')
+#import os
+#os.chdir(r'C:\Users\jonas\Desktop\MoonRun')
 
 
 #general game values
@@ -95,8 +95,16 @@ winheight = 400
 window = pygame.display.set_mode((winwidth,winheight))
 
 #fonts
-smallfont = pygame.font.Font('pixel.otf', 25)
-bigfont = pygame.font.Font('pixel.otf', 55)
+font = 'pixel.otf'
+smallfont = pygame.font.Font(font, 25)
+bigfont = pygame.font.Font(font, 55)
+
+#Colours
+fontcolour = pygame.Color(255,201,14)
+white = pygame.Color('white')
+black = pygame.Color('black')
+p1colour = pygame.Color('red')
+p2colour = pygame.Color('blue')
 
 #images
 night = pygame.image.load('starry.png')
@@ -355,6 +363,7 @@ playtime = 0
 end = False
 replay = False
 menu = True
+second_menu = False
 twoplayer = False
 
 
@@ -383,26 +392,85 @@ while run:
                 run = False
                 menu = False
         
+                
         title.draw(window)
-        keys = pygame.key.get_pressed()
-        pygame.display.update()
-
-        if keys[pygame.K_2]:
-            select.play()
-            twoplayer = True
-            playerlist.append(player2)
-            menu = False
         
-        if keys[pygame.K_1]:
-            select.play()
-            twoplayer = False
-            menu = False
+        text = Text(winwidth//2, winheight//3, 'Moon run', font, 55, fontcolour)
+        text.show_text()
         
-        if keys[pygame.K_ESCAPE]:
-            run = False
-            menu = False
+        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
+        text2.show_text()
+
+        pygame.display.flip()
 
 
+        for key in pygame.key.get_pressed():
+            if key == True:
+                menu = False
+                second_menu = True
+        
+    while second_menu: # second menu loop
+        
+        title.draw(window)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+    
+        text1 = Text(winwidth//2, winheight//3, '1 Player', font, 25, fontcolour) # 1 Player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player', font, 25, fontcolour) # 2 player text
+        back = Text(winwidth//5, winheight//1.25, 'Back', font, 15, fontcolour) # Back button text
+        text1.show_text() # method to show the text
+        text2.show_text()
+        back.show_text()
+        pygame.display.flip()
+        
+        while text1.mouse_over(): # While loop for when the mouse is on top of the text
+            text1 = Text(winwidth//2, winheight//3, '1 Player', font, 25, p1colour) # redraws the text but changes colour 
+            title.draw(window)
+            text1.show_text()
+            text2.show_text()
+            back.show_text()
+            pygame.display.flip() # updates the display
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN: # if the mouse is clicked while on the text
+                    select.play()
+                    twoplayer = False
+                    second_menu = False
+                    
+        while text2.mouse_over():
+            text2 = Text(winwidth//2, winheight//2, '2 Player', font, 25, p2colour )  
+            title.draw(window)
+            text1.show_text()
+            text2.show_text()
+            back.show_text()
+            pygame.display.flip()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    select.play()
+                    twoplayer = True
+                    playerlist.append(player2)
+                    second_menu = False
+                    
+        while back.mouse_over():
+            back = Text(winwidth//5, winheight//1.25, 'Back', font, 15, pygame.Color('white'))
+            title.draw(window)
+            text1.show_text()
+            text2.show_text()
+            back.show_text()
+            pygame.display.flip()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    second_menu= False
+                    menu = True
+            
+            
+            
+
+#game loop
     #default movement
     for player in playerlist:
         player.x -= worldvel
@@ -527,18 +595,35 @@ while run:
                     run = False
                     pause = False
             
-            pygame.draw.rect(window,(20,20,20),(winwidth/2-200,winheight/2-100,400,200))
-            pmsg = smallfont.render("Space to continue...", 1, (255,201,14))
-            window.blit(pmsg, (250,250))
             
-            pkeys = pygame.key.get_pressed()
-            if pkeys[pygame.K_SPACE]:
-                select.play()
-                pause = False
-
-            if pkeys[pygame.K_ESCAPE]:
-                run = False
-                pause = False
+            contmsg = Text(winwidth//2, winheight//2, 'Continue', font, 35, fontcolour)
+            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart', font, 35, fontcolour)
+            contmsg.show_text()
+            retrymsg.show_text()
+            pygame.display.flip()
+            
+            while contmsg.mouse_over():
+                contmsg = Text(winwidth//2, winheight//2, 'Continue', font, 35, white)
+                contmsg.show_text()
+                retrymsg.show_text()
+                pygame.display.flip()
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        select.play()
+                        pause = False
+                        
+            while retrymsg.mouse_over():
+                retrymsg = Text(winwidth//2, winheight//1.5, 'Restart', font, 35, white)   
+                retrymsg.show_text()
+                contmsg.show_text()
+                pygame.display.flip()
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        select.play()
+                        reset()
+                        pause = False
+                
+            
 
             pygame.display.update()
             continue
