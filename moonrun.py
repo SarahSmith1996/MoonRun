@@ -5,7 +5,6 @@ V 0.4:
 
 NOTES:
 
-set difficulty (worldvel) at beginning
 
 
 TO DO: 
@@ -30,9 +29,6 @@ Remmy:
 Mohammad:
 - Sprites
 - Collisions/platforms
-
-Jonas:
-- walking function
 
 
 OPTIMIZE CODE:
@@ -76,8 +72,8 @@ import pickle
 pygame.init()
 
 
-#import os
-#os.chdir(r'C:\Users\jonas\Desktop\MoonRun')
+import os
+os.chdir(r'C:\Users\jonas\Desktop\MoonRun\git\MoonRun')
 
 
 #general game values
@@ -106,12 +102,12 @@ p2colour = pygame.Color('blue')
 #images
 night = pygame.image.load('starry.png')
 
-p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png')]
-p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png')]
+p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
+p2move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
 p1stand = pygame.image.load('p10.png')
-p1jump = pygame.image.load('p1j.png')
+p1jump = [pygame.image.load('p1j.png'),pygame.image.load('p1j2.png')]
 p2stand = pygame.image.load('p20.png')
-p2jump = pygame.image.load('p2j.png')
+p2jump = [pygame.image.load('p1j.png'),pygame.image.load('p1j2.png')]
 
 
 #sounds
@@ -202,23 +198,22 @@ class player (object):
         if self.move:
             if self.step + 1 > 8:
                 self.step = 0
-            if self.step < 4:
-                if not self.left: 
-                    window.blit(self.movelist[0], (self.x,self.y))
-                else:
-                    window.blit(pygame.transform.flip(self.movelist[0],1,0), (self.x,self.y))
-                self.step += 1
-            if self.step >= 4:
-                if not self.left: 
-                    window.blit(self.movelist[1], (self.x,self.y))
-                else:
-                    window.blit(pygame.transform.flip(self.movelist[1],1,0), (self.x,self.y))
-                self.step += 1
+            if not self.left: 
+                window.blit(self.movelist[self.step//2], (self.x,self.y))
+            else:
+                window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))
+            self.step += 1
         elif self.isJump and self.neg == 1:
             if not self.left:
-                window.blit(self.jumpimg, (self.x,self.y))
+                if pygame.time.get_ticks()%2 == 0:
+                    window.blit(self.jumpimg[0], (self.x,self.y))
+                else:
+                    window.blit(self.jumpimg[1], (self.x,self.y))
             else: 
-                window.blit(pygame.transform.flip(self.jumpimg,1,0), (self.x,self.y))
+                if pygame.time.get_ticks()%2 == 0:
+                    window.blit(pygame.transform.flip(self.jumpimg[0],1,0), (self.x,self.y))
+                else:
+                    window.blit(pygame.transform.flip(self.jumpimg[1],1,0), (self.x,self.y))
         else:
             if not self.left:
                 window.blit(self.standimg, (self.x,self.y))
@@ -407,8 +402,8 @@ bd2 = backdrop(0,0,worldvel/2,'hills_fg.png',800,400)
 
 lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
-player1 = player(winwidth//2,winheight-80,64,64, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),winheight-80,64,64, p2move, p2stand, p2jump, 'Player 2')
+player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
+player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
 
 #crashes when file is empty
 try:
@@ -624,13 +619,13 @@ while run:
     #player death
     for player in playerlist:
         for hole in holelist:
-            if player.x > hole.x + 5 and player.x < hole.x+250-player.width and player.y >= winheight-84:
+            if player.x > hole.x + 5 and player.x < hole.x+hole.width-player.width and player.y >= winheight-91:
                 if player.alive:
                     death.play()
                 player.alive = False
                 player.y += 15
 
-        if player.x <= -32 and player.alive:
+        if player.x <= -50 and player.alive:
             player.isJump = False #so that jetpack doesn't drown out death sound
             death.play()
             player.alive = False
