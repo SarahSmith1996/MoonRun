@@ -94,12 +94,12 @@ winwidth = 800
 winheight = 400
 window = pygame.display.set_mode((winwidth,winheight))
 
-#####fonts
+#fonts
 font = 'pixel.otf'
 smallfont = pygame.font.Font(font, 25)
 bigfont = pygame.font.Font(font, 55)
 
-#####Colours
+#Colours
 fontcolour = pygame.Color(255,201,14)
 p1colour = pygame.Color('red')
 p2colour = pygame.Color('blue')
@@ -268,7 +268,7 @@ class Item (stuff):
         else:
             window.blit(pygame.image.load(secimg),(self.x,self.y))
 
-class Text: #### creating the text class
+class Text: # creating the text class
     
     def __init__(self, x, y, text, font, fontsize, colour):
         self.x  = x
@@ -403,7 +403,7 @@ while run:
             run = False
 
             
-    #####game menu
+    #game menu
     while menu:
         clock.tick(27)
 
@@ -430,7 +430,7 @@ while run:
                 menu = False
                 second_menu = True
         
-    while second_menu: #### second menu loop
+    while second_menu: # second menu loop
         
         title.draw(window)
         
@@ -490,24 +490,8 @@ while run:
             
             
             
-        '''keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_2]:
-            select.play()
-            twoplayer = True
-            playerlist.append(player2)
-            menu = False
-        
-        if keys[pygame.K_1]:
-            select.play()
-            twoplayer = False
-            menu = False
-        
-        if keys[pygame.K_ESCAPE]:
-            run = False
-            menu = False'''
-
-#def gameloop():
+#game loop
     #default movement
     for player in playerlist:
         player.x -= worldvel
