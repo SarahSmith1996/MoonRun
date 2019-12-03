@@ -75,6 +75,7 @@ TO FIX:
 # general initiation
 import pygame
 import random
+import pickle
 
 pygame.init()
 
@@ -308,6 +309,7 @@ def reset():
     global replay
     global playerlist
     global itemlist
+    global highget
     
     holelist=[]
     meteolist=[]
@@ -315,6 +317,7 @@ def reset():
     gameovercount=0
     winner=0
     playtime=0
+    highget = True
     end = False
     replay = False
     for player in playerlist:
@@ -344,6 +347,15 @@ lunar = stuff(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 player1 = player(winwidth//2,winheight-80,64,64, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),winheight-80,64,64, p2move, p2stand, p2jump, 'Player 2')
 
+#crashes when file is empty
+try:
+    file = open("highscore.hs","rb")
+    highscore = pickle.load(file)
+    file.close()
+except FileNotFoundError:
+    highscore = scoreboard([0,0,0,0,0])
+
+
 #start conditions
 itemlist=[]
 holelist=[]
@@ -356,6 +368,7 @@ end = False
 replay = False
 menu = True
 twoplayer = False
+highget = True
 
 
 #music for main game
@@ -566,8 +579,11 @@ while run:
     
     if not twoplayer:
         if not player1.alive:
-            score = playtime
+            myscore = playtime
             gameovercount += 1
+            if highget:
+                highscore.addscore(myscore)
+                highget = False
         if player1.alive:
             playtime += 1
             # more elegant but not resettable: playtime = pygame.time.get_ticks() // 1000 
@@ -615,12 +631,12 @@ while run:
                 window.blit(winnername, (260,300))
             else:
                 if not twoplayer:
-                    newscore = smallfont.render("Your Score:  "+str(score).zfill(4), 1, (255,201,14))
+                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,201,14))
                     window.blit(newscore, (260,300))
                 else:
                     winnername = smallfont.render("Did you do that on purpose?", 1, (255,201,14))
                     window.blit(winnername, (180,300))
-            pygame.display.update()
+            
             
             if keys[pygame.K_r]:
                 select.play()
@@ -635,14 +651,27 @@ while run:
                 menu = True
                 endrun = False
 
+            if keys[pygame.K_h]:
+                pygame.draw.rect(window,(255,201,14),(winwidth/2-200,winheight/2-150,400,300))
+                linecount = 0
+                for score in highscore.scoreList:
+                    linecount += 1
+                    window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (350,100+linecount*40))
+
             if keys[pygame.K_ESCAPE]:
                 run = False
                 endrun = False
-
+            
+            pygame.display.update()
+            
             #leave game 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     endrun = False 
                     run = False
+
+file = open("highscore.hs","wb")
+pickle.dump(highscore,file)
+file.close()
 
 pygame.quit()
