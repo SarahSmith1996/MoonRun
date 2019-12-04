@@ -43,7 +43,7 @@ OPTIMIZE CODE:
 - reduce image/sound sizes
 
 - more counter digits
-- align text with " size(text) -> (width, height) " https://stackoverflow.com/questions/25149892/how-to-get-the-width-of-text-using-pygame
+- align text with size(text) -> (width, height) " https://stackoverflow.com/questions/25149892/how-to-get-the-width-of-text-using-pygame
     - also auto align on screen score with this
 - max score?? 999.999?
 - player shouldnt be able to run too far to the right
@@ -474,7 +474,10 @@ while run:
 
         pygame.display.flip()
 
-
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            menu = False
+            second_menu = True
+        
         for key in pygame.key.get_pressed():
             if key == True:
                 menu = False
