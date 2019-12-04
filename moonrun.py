@@ -1,60 +1,29 @@
 """
 -------------------------- MOON RUN -------------------------------
 
-V 0.4:
 
 NOTES:
-- background sprites are lagging 
-- mouseclick only works when leaving text field
+
+    IDEAS:
+    - Enter Name
+    - add shooting star
+    - spikey objects/aliens that kill on contact
 
 
-TO DO:  
-- obstacles, new sprites, title menu
-- collision class (meteorite collision)
-- pause menu: exit game, music?
-- other items jetpack-boost?
-- increase speed as game progresses (probably have to pass worldvel to draw functions)
-- player dies when walking into obstacles? easier and maybe more fun, need spikes or sth
-- Enter Name
+    OPTIMIZE CODE:
+    - OOP optimization 
+        - class variables change self to classname?
+        - 'stuff' subclass of elements (draw function in element class)?
+        - class for text with draw method??
+    - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
+    - remove hardcoding
+    - sort code: global variables, databases, functions
+    - sounds drown each other out
+    - background sprites are lagging 
+    - change hole sprite, so meteorites look better on top
 
-
-Sarah:
-- Sprites
-- Physics Engine (player.move --> jump, falling meteorites)
-
-Remmy: 
-- Import title
-- pause menu
-
-Mohammad:
-- Sprites
-- Collisions/platforms
-
-
-OPTIMIZE CODE:
-- OOP optimization 
-    - class variables change self to classname?
-    - 'stuff' subclass of elements (draw function in element class)?
-    - class for text with draw method??
-- make reset function the general initializer of all game variables -> reset at the start of game (within menu)
-- remove hardcoding
-- sort code: global variables, databases, functions
-
-- more counter digits
-- align text with size(text) -> (width, height) " https://stackoverflow.com/questions/25149892/how-to-get-the-width-of-text-using-pygame
-    - also auto align on screen score with this
-- max score?? 999.999?
-- player shouldnt be able to run too far to the right
-- step sounds don't match walking speed
-- change jump so player can jump on objects and item works
-
-
-OPTIMIZE GAME:
-- add shooting star
-
-TO FIX: 
-- sounds drown each other out
-- hole sprite, so meteorites look better on top
+    - align text with size(text) -> (width, height) " https://stackoverflow.com/questions/25149892/how-to-get-the-width-of-text-using-pygame
+        - also auto align on screen score with this
 
 
 """
@@ -100,6 +69,8 @@ p2colour = pygame.Color('blue')
 
 #images
 night = pygame.image.load('starry.png') 
+info1 = pygame.image.load('info1.png') 
+info2 = pygame.image.load('info2.png') 
 
 p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
 p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png'), pygame.image.load('p23.png'), pygame.image.load('p24.png'), pygame.image.load('p25.png'), pygame.image.load('p26.png'), pygame.image.load('p27.png'), pygame.image.load('p28.png')]
@@ -163,7 +134,8 @@ class player (object):
 
             elif rightB:
                 self.left = False
-                self.x += self.vel
+                if self.x <= winwidth:
+                    self.x += self.vel
                 if not self.isJump:
                     self.move = True
                     step.play()
@@ -333,7 +305,23 @@ def createAndMove(typ,lst,listLimit,randLimit):
     #move objects at their velocity
     for obj in lst:
         obj.x -= worldvel
+"""
+def instructionloop(twoplayer):
+    ins = True
+    while ins == True:
+        clock.tick(27)
+        if twoplayer:
+            window.blit(info1,(0,0))
+        else:
+            window.blit(info2, (0,0))
         
+        keys=pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            ins = False
+        
+        pygame.display.update()
+"""     
 class Text: #### creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
@@ -504,11 +492,13 @@ while run:
             select.play()
             twoplayer = True
             playerlist.append(player2)
+            #instructionloop(twoplayer)
             second_menu = False
         
         if keys[pygame.K_1]:
             select.play()
             twoplayer = False
+            #instructionloop(twoplayer)
             second_menu = False
         
         if keys[pygame.K_b]:
@@ -532,6 +522,7 @@ while run:
                 if event.type == pygame.MOUSEBUTTONDOWN: # if the mouse is clicked while on the text
                     select.play()
                     twoplayer = False
+                    #instructionloop(twoplayer)
                     second_menu = False
                     
         while text2.mouse_over():
@@ -547,6 +538,7 @@ while run:
                     select.play()
                     twoplayer = True
                     playerlist.append(player2)
+                    #instructionloop(twoplayer)
                     second_menu = False
                     
         while back.mouse_over():
