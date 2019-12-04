@@ -11,7 +11,6 @@ NOTES:
 TO DO:  
 - obstacles, new sprites, title menu
 - collision class (meteorite collision)
-- highscores 
 - pause menu: exit game, music?
 - other items jetpack-boost?
 - increase speed as game progresses (probably have to pass worldvel to draw functions)
@@ -295,7 +294,7 @@ class scoreboard (object):
 def redrawGameWindow():
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
-    bd2.draw(window)
+    #bd2.draw(window)
     lunar.draw(window)
     pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
     for holes in holelist:
@@ -402,7 +401,7 @@ def reset():
 #class instances
 title = backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
-bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
+#bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
 
 lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
@@ -670,7 +669,7 @@ while run:
     player1.vel = worldvel+2
     player2.vel = worldvel+2
     bd1.vel = worldvel/8
-    bd2.vel = worldvel/4
+    #bd2.vel = worldvel/4
 
     #game over 
     
