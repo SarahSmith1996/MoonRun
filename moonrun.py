@@ -5,7 +5,6 @@ V 0.4:
 
 NOTES:
 - background sprites are lagging 
-- if displayObjects are already on screen their vel isn't updated
 - mouseclick only works when leaving text field
 
 
@@ -68,12 +67,13 @@ TO FIX:
 import pygame
 import random
 import pickle
+import os
 
 pygame.init()
 
 
-import os
-os.getcwd()
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 
 
 #general game values
@@ -488,16 +488,34 @@ while run:
             if event.type == pygame.QUIT:
                 pygame.quit()
     
-        text1 = Text(winwidth//2, winheight//3, '1 Player', font, 25, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player', font, 25, fontcolour) # 2 player text
+        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
         back = Text(winwidth//5, winheight//1.25, 'Back', font, 15, fontcolour) # Back button text
         text1.show_text() # method to show the text
         text2.show_text()
         back.show_text()
         pygame.display.flip()
+
+        #isn't working?
+        keys=pygame.key.get_pressed()
+
+        if keys[pygame.K_2]:
+            select.play()
+            twoplayer = True
+            playerlist.append(player2)
+            second_menu = False
+        
+        if keys[pygame.K_1]:
+            select.play()
+            twoplayer = False
+            second_menu = False
+        
+        if keys[pygame.K_ESCAPE]:
+            run = False
+            second_menu = False
         
         while text1.mouse_over(): # While loop for when the mouse is on top of the text
-            text1 = Text(winwidth//2, winheight//3, '1 Player', font, 25, p1colour) # redraws the text but changes colour 
+            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -511,7 +529,7 @@ while run:
                     second_menu = False
                     
         while text2.mouse_over():
-            text2 = Text(winwidth//2, winheight//2, '2 Player', font, 25, p2colour )  
+            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -538,23 +556,6 @@ while run:
                     second_menu= False
                     menu = True
             
-            
-            
-
-        if keys[pygame.K_2]:
-            select.play()
-            twoplayer = True
-            playerlist.append(player2)
-            menu = False
-        
-        if keys[pygame.K_1]:
-            select.play()
-            twoplayer = False
-            menu = False
-        
-        if keys[pygame.K_ESCAPE]:
-            run = False
-            menu = False'''
 
 #def gameloop():
     #default movement
