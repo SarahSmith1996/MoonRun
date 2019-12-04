@@ -605,17 +605,40 @@ while run:
                     run = False
                     pause = False
             
-            pygame.draw.rect(window,(20,20,20),(winwidth/2-200,winheight/2-100,400,200))
-            pmsg = smallfont.render("Space to continue...", 1, (255,201,14))
-            window.blit(pmsg, (250,250))
+            contmsg = Text(winwidth//2, winheight//2, 'Continue [c]', font, 35, fontcolour)
+            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [r]', font, 35, fontcolour)
+            contmsg.show_text()
+            retrymsg.show_text()
+            pygame.display.flip()
+            
+            while contmsg.mouse_over():
+                contmsg = Text(winwidth//2, winheight//2, 'Continue [c]', font, 35, white)
+                contmsg.show_text()
+                retrymsg.show_text()
+                pygame.display.flip()
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        select.play()
+                        pause = False
+                        
+            while retrymsg.mouse_over():
+                retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [r]', font, 35, white)   
+                retrymsg.show_text()
+                contmsg.show_text()
+                pygame.display.flip()
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        select.play()
+                        reset()
+                        pause = False
             
             pkeys = pygame.key.get_pressed()
-            if pkeys[pygame.K_SPACE]:
+            if pkeys[pygame.K_c]:
                 select.play()
                 pause = False
 
-            if pkeys[pygame.K_ESCAPE]:
-                run = False
+            if pkeys[pygame.K_r]:
+                reset()
                 pause = False
 
             pygame.display.update()
