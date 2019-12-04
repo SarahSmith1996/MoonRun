@@ -88,6 +88,8 @@ window = pygame.display.set_mode((winwidth,winheight))
 
 #fonts
 font = 'pixel.otf'
+
+vsmallfont = pygame.font.Font(font,15)
 smallfont = pygame.font.Font(font, 25)
 bigfont = pygame.font.Font(font, 55)
 
@@ -713,6 +715,9 @@ while run:
             title.draw(window)
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
             window.blit(gomsg, (220,100))
+            goprompt = vsmallfont.render ("Restart [R]     High Score[H]   Exit[E]", 1,(255,201,14))
+            window.blit (goprompt, (225,350))
+            
             
             keys = pygame.key.get_pressed()
 
