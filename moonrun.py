@@ -39,7 +39,6 @@ OPTIMIZE CODE:
 - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
 - remove hardcoding
 - sort code: global variables, databases, functions
-- reduce image/sound sizes
 
 - more counter digits
 - align text with size(text) -> (width, height) " https://stackoverflow.com/questions/25149892/how-to-get-the-width-of-text-using-pygame
@@ -55,9 +54,8 @@ OPTIMIZE GAME:
 
 TO FIX: 
 - sounds drown each other out
-- Esc before redraw window looks awkward
 - hole sprite, so meteorites look better on top
-- change meteor landing (according to worldvel)
+
 
 """
 
@@ -513,6 +511,11 @@ while run:
             twoplayer = False
             second_menu = False
         
+        if keys[pygame.K_b]:
+            select.play()
+            second_menu= False
+            menu = True
+        
         if keys[pygame.K_ESCAPE]:
             run = False
             second_menu = False
@@ -700,9 +703,10 @@ while run:
                 winner = player1
                 gameovercount += 1
     
-    #refresh screen
-    redrawGameWindow()
-    pygame.display.update()
+    #refresh screen#
+    if not menu and not second_menu:
+        redrawGameWindow()
+        pygame.display.update()
 
     if end:
         pygame.mixer.music.load('gameover.mp3')
@@ -715,7 +719,7 @@ while run:
             title.draw(window)
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
             window.blit(gomsg, (220,100))
-            goprompt = vsmallfont.render ("Restart [R]     High Score[H]   Exit[E]", 1,(255,201,14))
+            goprompt = vsmallfont.render ("Restart [R]     High Score[H]     Exit[ESC]", 1,(255,201,14))
             window.blit (goprompt, (225,350))
             
             
