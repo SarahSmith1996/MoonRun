@@ -100,7 +100,7 @@ p1colour = pygame.Color('red')
 p2colour = pygame.Color('blue')
 
 #images
-night = pygame.image.load('starry.png')
+night = pygame.image.load('starry.png') 
 
 p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
 p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png'), pygame.image.load('p23.png'), pygame.image.load('p24.png'), pygame.image.load('p25.png'), pygame.image.load('p26.png'), pygame.image.load('p27.png'), pygame.image.load('p28.png')]
@@ -335,7 +335,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
     for obj in lst:
         obj.x -= worldvel
         
-class Text: #### creating the text class
+class Text: #### creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
         self.x  = x
@@ -490,9 +490,9 @@ while run:
     
         text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
         text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
-        back = Text(winwidth//5, winheight//1.25, 'Back', font, 15, fontcolour) # Back button text
+        back = Text(winwidth//5, winheight//1.25, 'Back [B]', font, 15, fontcolour) # Back button text
         text1.show_text() # method to show the text
-        text2.show_text()
+        text2.show_text() 
         back.show_text()
         pygame.display.flip()
 
@@ -544,7 +544,7 @@ while run:
                     second_menu = False
                     
         while back.mouse_over():
-            back = Text(winwidth//5, winheight//1.25, 'Back', font, 15, pygame.Color('white'))
+            back = Text(winwidth//5, winheight//1.25, 'Back [B]', font, 15, pygame.Color('white'))
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -605,14 +605,14 @@ while run:
                     run = False
                     pause = False
             
-            contmsg = Text(winwidth//2, winheight//2, 'Continue [c]', font, 35, fontcolour)
-            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [r]', font, 35, fontcolour)
+            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)
+            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
             contmsg.show_text()
             retrymsg.show_text()
             pygame.display.flip()
             
             while contmsg.mouse_over():
-                contmsg = Text(winwidth//2, winheight//2, 'Continue [c]', font, 35, white)
+                contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
                 contmsg.show_text()
                 retrymsg.show_text()
                 pygame.display.flip()
@@ -622,7 +622,7 @@ while run:
                         pause = False
                         
             while retrymsg.mouse_over():
-                retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [r]', font, 35, white)   
+                retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
                 retrymsg.show_text()
                 contmsg.show_text()
                 pygame.display.flip()
@@ -712,8 +712,8 @@ while run:
             title.draw(window)
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
             window.blit(gomsg, (220,100))
-            keys = pygame.key.get_pressed()
             
+            keys = pygame.key.get_pressed()
 
             if winner != 0:
                 winnername = smallfont.render("Winner:  "+winner.name, 1, (255,201,14))
