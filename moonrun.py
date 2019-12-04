@@ -71,7 +71,7 @@ pygame.init()
 
 
 import os
-os.chdir(r'C:\Users\jonas\Desktop\MoonRun\git\MoonRun')
+os.getcwd()
 
 
 #general game values
