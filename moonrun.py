@@ -6,9 +6,10 @@ V 0.4:
 NOTES:
 - background sprites are lagging 
 - if displayObjects are already on screen their vel isn't updated
+- mouseclick only works when leaving text field
 
 
-TO DO: 
+TO DO:  
 - obstacles, new sprites, title menu
 - collision class (meteorite collision)
 - highscores 
@@ -332,7 +333,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
         lst += [x]
     #move objects at their velocity
     for obj in lst:
-        obj.x -= obj.vel
+        obj.x -= worldvel
         
 class Text: #### creating the text class
     
@@ -400,15 +401,15 @@ def reset():
 
 #class instances
 title = backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = backdrop(0,0,worldvel/4,'hills_bg.png',800,400)
-bd2 = backdrop(0,0,worldvel/2,'hills_fg.png',800,400)
+bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
 
 lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
 player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
 
-#crashes when file is empty
+#loads highscores from file
 try:
     file = open("highscore.hs","rb")
     highscore = pickle.load(file)
@@ -641,8 +642,8 @@ while run:
         select.play()
     player1.vel = worldvel+2
     player2.vel = worldvel+2
-    bd1.vel = worldvel/4
-    bd2.vel = worldvel/2
+    bd1.vel = worldvel/8
+    bd2.vel = worldvel/4
 
     #game over 
     
