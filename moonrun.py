@@ -498,7 +498,6 @@ while run:
         back.show_text()
         pygame.display.flip()
 
-        #isn't working?
         keys=pygame.key.get_pressed()
 
         if keys[pygame.K_2]:
