@@ -4,7 +4,8 @@
 V 0.4:
 
 NOTES:
-
+- background sprites are lagging 
+- if displayObjects are already on screen their vel isn't updated
 
 
 TO DO: 
@@ -101,11 +102,11 @@ p2colour = pygame.Color('blue')
 night = pygame.image.load('starry.png')
 
 p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
-p2move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
+p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png'), pygame.image.load('p23.png'), pygame.image.load('p24.png'), pygame.image.load('p25.png'), pygame.image.load('p26.png'), pygame.image.load('p27.png'), pygame.image.load('p28.png')]
 p1stand = pygame.image.load('p10.png')
 p1jump = [pygame.image.load('p1j.png'),pygame.image.load('p1j2.png')]
 p2stand = pygame.image.load('p20.png')
-p2jump = [pygame.image.load('p1j.png'),pygame.image.load('p1j2.png')]
+p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
 
 
 #sounds
@@ -131,7 +132,7 @@ class player (object):
         self.jumpimg = jumpimg
         self.name = name
 
-        self.vel = (5/4)*worldvel
+        self.vel = worldvel+2
         self.isJump = False
         self.jumpheight = 10
         self.jumpCount = self.jumpheight
@@ -422,6 +423,7 @@ except EOFError:
 itemlist=[]
 holelist=[]
 meteolist=[]
+allobjlist = [itemlist,holelist,meteolist]
 playerlist = [player1]
 gameovercount = 0
 winner = 0
@@ -613,8 +615,6 @@ while run:
                         select.play()
                         reset()
                         pause = False
-                
-            
 
             pygame.display.update()
             continue
@@ -639,9 +639,10 @@ while run:
     if speedcount % 500 == 0:
         worldvel *= 1.5
         select.play()
-    player1.vel = worldvel
-    player2.vel = worldvel
-
+    player1.vel = worldvel+2
+    player2.vel = worldvel+2
+    bd1.vel = worldvel/4
+    bd2.vel = worldvel/2
 
     #game over 
     
