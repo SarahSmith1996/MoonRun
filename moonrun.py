@@ -37,13 +37,14 @@ import os
 
 pygame.init()
 
-
+#gets current working directory to access all files
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 
 #general game values
 worldvel = 8
+maxscore = 999999
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()
 
@@ -81,6 +82,8 @@ p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
 
 
 #sounds
+
+start = pygame.mixer.Sound('start.wav')
 jetpack = pygame.mixer.Sound('jetpack.wav')
 death = pygame.mixer.Sound('death.wav')
 step = pygame.mixer.Sound('step.wav')
@@ -88,6 +91,7 @@ fall = pygame.mixer.Sound('falling.wav')
 crash = pygame.mixer.Sound('crash.wav')
 select = pygame.mixer.Sound('selection.wav')
 itemsound = pygame.mixer.Sound('item.wav')
+speed = pygame.mixer.Sound('speed.wav')
 
 
 
@@ -254,6 +258,8 @@ class scoreboard (object):
         self.scoreList = scoreList
     
     def addscore(self,newscore):
+        if newscore >= maxscore:
+            newscore = maxscore
         self.scoreList += [newscore]
         self.scoreList = sorted(self.scoreList,reverse=True)
         self.scoreList.pop(self.LENGTH+1)
@@ -322,6 +328,7 @@ def instructionloop(twoplayer):
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    select.play()
                     trigger = False
         
 
@@ -470,6 +477,7 @@ while run:
         
         for key in pygame.key.get_pressed():
             if key == True:
+                start.play()
                 menu = False
                 second_menu = True
         
@@ -480,12 +488,13 @@ while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-    
-        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
-        text1.show_text() # method to show the text
-        text2.show_text() 
-        pygame.display.flip()
+        
+        if run:
+            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
+            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+            text1.show_text() # method to show the text
+            text2.show_text()
+            pygame.display.update()
 
         keys=pygame.key.get_pressed()
 
@@ -649,7 +658,7 @@ while run:
     speedcount += 1
     if speedcount % 500 == 0:
         worldvel *= 1.5
-        select.play()
+        speed.play()
     player1.vel = worldvel+2
     player2.vel = worldvel+2
     bd1.vel = worldvel/8
@@ -669,9 +678,11 @@ while run:
                 highget = False
         if player1.alive:
             playtime += 1 
-        timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
-        window.blit(timer, (705,20))
-        pygame.display.update()
+
+        if run:
+            timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
+            window.blit(timer, (winwidth-timer.get_width()-20,20))
+            pygame.display.update()
 
     else:
         if not player1.alive:
@@ -698,28 +709,28 @@ while run:
 
             title.draw(window)
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
-            window.blit(gomsg, (220,100))
+            window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
             goprompt = vsmallfont.render ("Restart [R]                           High Score[H]                           Main Menu[E]                           Exit[ESC]", 1,(255,201,14))
-            window.blit (goprompt, (40,350))
+            window.blit (goprompt, (winwidth//2-goprompt.get_width()//2,350))
             
             
             keys = pygame.key.get_pressed()
 
             if winner != 0:
-                winnername = smallfont.render("Winner:  "+winner.name, 1, (255,201,14))
+                winnername = smallfont.render("Winner:  "+winner.name, 1, (fontcolour))
                 winner.move = True
                 winner.left = False
                 winner.x = winwidth/2 -winner.width/2
                 winner.y = winheight/2
                 winner.draw(window)
-                window.blit(winnername, (260,300))
+                window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
             else:
                 if not twoplayer:
-                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,201,14))
-                    window.blit(newscore, (260,250))
+                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (fontcolour))
+                    window.blit(newscore, (winwidth//2-newscore.get_width()//2,250))
                 else:
-                    winnername = smallfont.render("Did you do that on purpose?", 1, (255,201,14))
-                    window.blit(winnername, (180,300))
+                    winnername = smallfont.render("Did you do that on purpose?", 1, (fontcolour))
+                    window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
             
             
             if keys[pygame.K_r]:
@@ -736,11 +747,12 @@ while run:
                 endrun = False
 
             if keys[pygame.K_h]:
-                pygame.draw.rect(window,(255,201,14),(winwidth/2-200,winheight/2-150,400,300))
+                pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
                 linecount = 0
+                window.blit(smallfont.render("High Scores:", 1, (0,0,0)), (290,100))
                 for score in highscore.scoreList:
                     linecount += 1
-                    window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (350,100+linecount*40))
+                    window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (290,100+linecount*40))
 
             if keys[pygame.K_ESCAPE]:
                 run = False
