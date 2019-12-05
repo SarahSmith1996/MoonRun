@@ -437,6 +437,7 @@ speedcount = 0
 end = False
 replay = False
 menu = True
+endcredits = False
 second_menu = False
 twoplayer = False
 highget = True
@@ -483,10 +484,13 @@ while run:
             second_menu = True
         
         if event.type == pygame.KEYDOWN:
-            start.play()
+            if event.key == pygame.K_ESCAPE:
+                run = False
+            else:
+                start.play()
+                second_menu = True
             menu = False
-            second_menu = True
-        
+            
     while second_menu: # second menu loop
         
         title.draw(window)
@@ -495,12 +499,11 @@ while run:
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        if run:
-            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
-            text1.show_text() # method to show the text
-            text2.show_text()
-            pygame.display.update()
+        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+        text1.show_text() # method to show the text
+        text2.show_text()
+        pygame.display.update()
 
         keys=pygame.key.get_pressed()
 
@@ -761,8 +764,10 @@ while run:
                     window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (290,100+linecount*40))
 
             if keys[pygame.K_ESCAPE]:
+                start.play()
                 run = False
                 endrun = False
+                endcredits = True
             
             pygame.display.update()
 
@@ -771,6 +776,28 @@ while run:
                 if event.type == pygame.QUIT:
                     endrun = False 
                     run = False
+
+    endcount = 0
+    while endcredits and endcount <300:
+        
+        credit = ["Moon Run","","Game and visuals:","", "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith", "Mohammad Yazdani","","Music:","",\
+            "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems" ,"Available for free at    http://EricSkiff.com/music", "","", "2019"]
+        title.draw(window)
+        linecount = 0
+        for line in credit:
+            linecount += 20
+            i = Text(winwidth//2, 30+linecount, line, font, 15, fontcolour)
+            i.show_text()
+
+        pygame.display.update() 
+        endcount += 1
+
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    endcredits = False
+                    run = False
+
+
 
 file = open("highscore.hs","wb")
 pickle.dump(highscore,file)
