@@ -305,23 +305,24 @@ def createAndMove(typ,lst,listLimit,randLimit):
     #move objects at their velocity
     for obj in lst:
         obj.x -= worldvel
-"""
+
 def instructionloop(twoplayer):
     ins = True
     while ins == True:
         clock.tick(27)
         if twoplayer:
-            window.blit(info1,(0,0))
+            window.blit(info1, (0,0))
         else:
             window.blit(info2, (0,0))
-        
+        pygame.display.update()
         keys=pygame.key.get_pressed()
 
         if keys[pygame.K_SPACE]:
             ins = False
+            pass
         
-        pygame.display.update()
-"""     
+        
+  
 class Text: #### creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
@@ -480,10 +481,8 @@ while run:
     
         text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
         text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
-        back = Text(winwidth//5, winheight//1.25, 'Back [B]', font, 15, fontcolour) # Back button text
         text1.show_text() # method to show the text
         text2.show_text() 
-        back.show_text()
         pygame.display.flip()
 
         keys=pygame.key.get_pressed()
@@ -501,11 +500,6 @@ while run:
             #instructionloop(twoplayer)
             second_menu = False
         
-        if keys[pygame.K_b]:
-            select.play()
-            second_menu= False
-            menu = True
-        
         if keys[pygame.K_ESCAPE]:
             run = False
             second_menu = False
@@ -515,7 +509,6 @@ while run:
             title.draw(window)
             text1.show_text()
             text2.show_text()
-            back.show_text()
             pygame.display.flip() # updates the display
             
             for event in pygame.event.get():
@@ -530,7 +523,6 @@ while run:
             title.draw(window)
             text1.show_text()
             text2.show_text()
-            back.show_text()
             pygame.display.flip()
             
             for event in pygame.event.get():
@@ -541,18 +533,6 @@ while run:
                     #instructionloop(twoplayer)
                     second_menu = False
                     
-        while back.mouse_over():
-            back = Text(winwidth//5, winheight//1.25, 'Back [B]', font, 15, pygame.Color('white'))
-            title.draw(window)
-            text1.show_text()
-            text2.show_text()
-            back.show_text()
-            pygame.display.flip()
-            
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    second_menu= False
-                    menu = True
             
 
 #def gameloop():
