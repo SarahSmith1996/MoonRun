@@ -696,7 +696,7 @@ while run:
                 gameovercount += 1
     
     #refresh screen#
-    if not menu and not second_menu:
+    if not menu and not second_menu and run:
         redrawGameWindow()
         pygame.display.update()
 
@@ -711,8 +711,8 @@ while run:
             title.draw(window)
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
             window.blit(gomsg, (220,100))
-            goprompt = vsmallfont.render ("Restart [R]     High Score[H]     Exit[ESC]", 1,(255,201,14))
-            window.blit (goprompt, (225,350))
+            goprompt = vsmallfont.render ("Restart [R]                           High Score[H]                           Main Menu[E]                           Exit[ESC]", 1,(255,201,14))
+            window.blit (goprompt, (40,350))
             
             
             keys = pygame.key.get_pressed()
