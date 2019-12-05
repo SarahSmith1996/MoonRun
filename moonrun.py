@@ -34,218 +34,36 @@ import pygame
 import random
 import pickle
 import os
+import GameProperties
+import Display
+import Player
+
 
 pygame.init()
 
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-
-
 #general game values
 worldvel = 8
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()
 
+gamewin = Display.Screen(800, 400)
+window = gamewin.create_window()
 
-#window
-winwidth = 800
-winheight = 400
-window = pygame.display.set_mode((winwidth,winheight))
+vsmallfont = Display.Fonts()
+vsmallfont.font_size(15)
+smallfont = Display.Fonts()
+smallfont.font_size(25)
+bigfont = Display.Fonts()
+bigfont.font_size(55)
+fontcolour = Display.Fonts()
+fontcolour.fonts_colours(255,201,14)
 
-#fonts
-font = 'pixel.otf'
+sky = GameProperties.Images()
+backgroundimg = GameProperties.Images()
 
-vsmallfont = pygame.font.Font(font,15)
-smallfont = pygame.font.Font(font, 25)
-bigfont = pygame.font.Font(font, 55)
-
-#Colours
-fontcolour = pygame.Color(255,201,14)
-white = pygame.Color('white')
-black = pygame.Color('black')
-p1colour = pygame.Color('red')
-p2colour = pygame.Color('blue')
-
-#images
-night = pygame.image.load('starry.png') 
-info1 = pygame.image.load('info1.png') 
-info2 = pygame.image.load('info2.png') 
-
-p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
-p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png'), pygame.image.load('p23.png'), pygame.image.load('p24.png'), pygame.image.load('p25.png'), pygame.image.load('p26.png'), pygame.image.load('p27.png'), pygame.image.load('p28.png')]
-p1stand = pygame.image.load('p10.png')
-p1jump = [pygame.image.load('p1j.png'),pygame.image.load('p1j2.png')]
-p2stand = pygame.image.load('p20.png')
-p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
-
-
-#sounds
-jetpack = pygame.mixer.Sound('jetpack.wav')
-death = pygame.mixer.Sound('death.wav')
-step = pygame.mixer.Sound('step.wav')
-fall = pygame.mixer.Sound('falling.wav')
-crash = pygame.mixer.Sound('crash.wav')
-select = pygame.mixer.Sound('selection.wav')
-itemsound = pygame.mixer.Sound('item.wav')
-
-
-
-class player (object):
-
-    def __init__(self,x,y,width,height,movelist,standimg,jumpimg,name):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.movelist = movelist
-        self.standimg = standimg
-        self.jumpimg = jumpimg
-        self.name = name
-
-        self.vel = worldvel+2
-        self.isJump = False
-        self.jumpheight = 10
-        self.jumpCount = self.jumpheight
-        self.left = False
-        self.step = 0
-        self.move = False
-        self.alive = True
-        self.neg = 1
-
-        #delete if not needed
-        self.ontop = True
-        self.maxvel = 2.5*worldvel
-        
-        self.maxjumpheight = 13
-
-
-    
-    #delete self.left
-    def moving(self, leftB, rightB, jumpB):
-        
-        if self.alive:
-            if leftB:
-                self.left = True
-                self.x -= self.vel
-                if not self.isJump:
-                    self.move = True
-                    step.play()
-
-            elif rightB:
-                self.left = False
-                if self.x <= winwidth:
-                    self.x += self.vel
-                if not self.isJump:
-                    self.move = True
-                    step.play()
-            
-            else: 
-                self.move = False
-
-            if not self.isJump:
-                if jumpB:
-                    self.isJump = True
-                    self.move = False
-                
-            else:
-                self.jump()
-    
-    def jump (self):
-        if self.jumpCount >= -self.jumpheight:
-            self.neg = 1
-            if self.jumpCount < 0:
-                self.neg = -1
-            self.y -= (self.jumpCount **2) * 0.25 * self.neg
-            self.jumpCount -= 0.5
-            if self.neg == 1 and self.x>0: 
-                jetpack.play()
-
-        else:
-            self.isJump = False
-            self.jumpCount = self.jumpheight
-
-    def draw(self, window):
-        if self.move:
-            if self.step + 1 > 16:
-                self.step = 0
-            if not self.left: 
-                window.blit(self.movelist[self.step//2], (self.x,self.y))
-            else:
-                window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))
-            self.step += 1
-        elif self.isJump and self.neg == 1:
-            if not self.left:
-                if pygame.time.get_ticks()%2 == 0:
-                    window.blit(self.jumpimg[0], (self.x,self.y))
-                else:
-                    window.blit(self.jumpimg[1], (self.x,self.y))
-            else: 
-                if pygame.time.get_ticks()%2 == 0:
-                    window.blit(pygame.transform.flip(self.jumpimg[0],1,0), (self.x,self.y))
-                else:
-                    window.blit(pygame.transform.flip(self.jumpimg[1],1,0), (self.x,self.y))
-        else:
-            if not self.left:
-                window.blit(self.standimg, (self.x,self.y))
-            else:
-                window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
-    
-    #should maybe move to item class, ideally use sprites instead
-    def collision(self):
-
-        #item
-        for item in itemlist:
-            if self.x > item.x and self.x < item.x + item.width:
-                if self.y+self.height >= item.y:
-
-                    if item.img == "item1.png":
-                        if self.vel < self.maxvel:
-                            self.vel += 4
-                    else:
-                        if self.jumpheight < self.maxjumpheight:
-                            #self.jumpheight += 2    doesn't work, redo jump
-                            print(self.jumpheight)
-                    itemsound.play()
-                    itemlist.pop(itemlist.index(item))
-
-
-
-class element (object):
-
-    def __init__(self,x,y,vel,img,width,height):
-        self.x = x
-        self.y = y
-        self.vel = vel
-        self.img = img
-        self.width = width
-        self.height = height
-
-
-class backdrop (element):
-    
-    def draw(self, window):
-        window.blit(pygame.image.load(self.img), (self.x,self.y))
-        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))
-        if self.x > -winwidth:
-            self.x -= self.vel
-        else:
-            self.x = 0
-        
-class displayObject (element):
-
-    def draw(self,window):
-        window.blit(pygame.image.load(self.img),(self.x,self.y))
-
-
-class Item (displayObject):
-
-
-    def draw(self,window,secimg):
-        if (pygame.time.get_ticks()//500)%2: 
-            window.blit(pygame.image.load(self.img),(self.x,self.y))
-        else:
-            window.blit(pygame.image.load(secimg),(self.x,self.y))
 
 class scoreboard (object):
     LENGTH = 4
@@ -264,7 +82,7 @@ class scoreboard (object):
 
 
 def redrawGameWindow():
-    window.blit(night,(0,0)) #draws background (starry night)
+    window.blit((sky.get_image("night")),(0,0)) #draws background (starry night)
     bd1.draw(window)
     #bd2.draw(window)
     lunar.draw(window)
@@ -274,11 +92,11 @@ def redrawGameWindow():
     for meteo in meteolist:
         meteo.draw(window)
     for item in itemlist:
-        if item.img=="item1.png":
+        if Items.img=="item1.png":
             otherimg = "item12.png"
         else:
             otherimg = "item22.png"
-        item.draw(window,otherimg)
+        Items.draw(window,otherimg)
     for player in playerlist:
         player.draw(window)
 
@@ -297,9 +115,9 @@ def createAndMove(typ,lst,listLimit,randLimit):
             fall.play()
         elif typ == "i":
             if pygame.time.get_ticks()%2 == 0:
-                x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
+                x = Items(winwidth,winheight-60,worldvel,'item1.png',32,32)
             else:
-                x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
+                x = Items(winwidth,winheight-60,worldvel,'item2.png',32,32)
         #add to objectlist
         lst += [x]
     #move objects at their velocity
@@ -311,9 +129,9 @@ def instructionloop(twoplayer):
     while ins == True:
         clock.tick(27)
         if twoplayer:
-            window.blit(info1,(0,0))
+            window.blit((GameProperties.Images.get_images("info1")),(0,0))
         else:
-            window.blit(info2, (0,0))
+            window.blit((GameProperties.Images.get_images("info2")), (0,0))
         
         keys=pygame.key.get_pressed()
 
@@ -387,14 +205,17 @@ def reset():
 
 
 #class instances
-title = backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+
+title = Display.Backdrop(0,0,worldvel/2,sky.get_image("night"),800,400)
+bd1 = Display.Backdrop(0,0,worldvel/8,backgroundimg.get_image("background"),800,400)
 #bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
 
-lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
+lunar = Display.BackgroundObjects(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
-player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
+player1 = player(winwidth//2,winheight-85,71,71, (GameProperties.Images.get_image("p1move")), \
+    (GameProperties.Images.get_images("p1stand")), (GameProperties.Images.get_image("p1jump")), 'Player 1')
+player2 = player(winwidth*(2/3),winheight-85,71,71, (GameProperties.Images.get_image("p2move")), \
+    (GameProperties.Images.get_images("p2stand")), (GameProperties.Images.get_image("p2jump")), 'Player 2')
 
 #loads highscores from file
 try:
