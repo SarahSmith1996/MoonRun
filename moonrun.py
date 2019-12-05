@@ -307,22 +307,28 @@ def createAndMove(typ,lst,listLimit,randLimit):
         obj.x -= worldvel
 
 def instructionloop(twoplayer):
-    ins = True
-    while ins == True:
+    counter = 0
+    trigger = True
+    
+    while counter < 100 and trigger:
         clock.tick(27)
+        counter += 1
+        title.draw(window)
         if twoplayer:
-            window.blit(info1, (0,0))
-        else:
             window.blit(info2, (0,0))
+        else:
+            window.blit(info1, (0,0))
         pygame.display.update()
-        keys=pygame.key.get_pressed()
 
-        if keys[pygame.K_SPACE]:
-            ins = False
-            pass
+
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_o]:
+            trigger = False
+       
+        print(counter)
+        print(trigger)
         
-        
-  
+
 class Text: #### creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
@@ -454,7 +460,7 @@ while run:
                 
         title.draw(window)
         
-        text = Text(winwidth//2, winheight//3, 'Moon run', font, 55, fontcolour)
+        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
         text.show_text()
         
         text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
@@ -491,13 +497,13 @@ while run:
             select.play()
             twoplayer = True
             playerlist.append(player2)
-            #instructionloop(twoplayer)
+            instructionloop(twoplayer)
             second_menu = False
         
         if keys[pygame.K_1]:
             select.play()
             twoplayer = False
-            #instructionloop(twoplayer)
+            instructionloop(twoplayer)
             second_menu = False
         
         if keys[pygame.K_ESCAPE]:
@@ -516,7 +522,7 @@ while run:
                 if event.type == pygame.MOUSEBUTTONDOWN: # if the mouse is clicked while on the text
                     select.play()
                     twoplayer = False
-                    #instructionloop(twoplayer)
+                    instructionloop(twoplayer)
                     second_menu = False
                     text1ctrl = False
         
@@ -533,7 +539,7 @@ while run:
                     select.play()
                     twoplayer = True
                     playerlist.append(player2)
-                    #instructionloop(twoplayer)
+                    instructionloop(twoplayer)
                     second_menu = False
                     text2ctrl = False
                     
@@ -714,7 +720,7 @@ while run:
             else:
                 if not twoplayer:
                     newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,201,14))
-                    window.blit(newscore, (260,300))
+                    window.blit(newscore, (260,250))
                 else:
                     winnername = smallfont.render("Did you do that on purpose?", 1, (255,201,14))
                     window.blit(winnername, (180,300))
