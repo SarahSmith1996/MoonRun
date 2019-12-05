@@ -504,12 +504,13 @@ while run:
             run = False
             second_menu = False
         
-        while text1.mouse_over(): # While loop for when the mouse is on top of the text
+        text1ctrl = True
+        while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
             text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
             title.draw(window)
             text1.show_text()
             text2.show_text()
-            pygame.display.flip() # updates the display
+            pygame.display.update() # updates the display
             
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN: # if the mouse is clicked while on the text
@@ -517,13 +518,15 @@ while run:
                     twoplayer = False
                     #instructionloop(twoplayer)
                     second_menu = False
-                    
-        while text2.mouse_over():
+                    text1ctrl = False
+        
+        text2ctrl = True            
+        while text2.mouse_over() and text2ctrl:
             text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
             title.draw(window)
             text1.show_text()
             text2.show_text()
-            pygame.display.flip()
+            pygame.display.update()
             
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -532,10 +535,9 @@ while run:
                     playerlist.append(player2)
                     #instructionloop(twoplayer)
                     second_menu = False
+                    text2ctrl = False
                     
             
-
-#def gameloop():
     #default movement
     for player in playerlist:
         player.x -= worldvel
@@ -589,7 +591,8 @@ while run:
             retrymsg.show_text()
             pygame.display.flip()
             
-            while contmsg.mouse_over():
+            contctrl = True
+            while contmsg.mouse_over() and contctrl:
                 contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
                 contmsg.show_text()
                 retrymsg.show_text()
@@ -598,8 +601,10 @@ while run:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         select.play()
                         pause = False
-                        
-            while retrymsg.mouse_over():
+                        contctrl = False
+
+            retryctrl = True            
+            while retrymsg.mouse_over() and retryctrl:
                 retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
                 retrymsg.show_text()
                 contmsg.show_text()
@@ -609,6 +614,7 @@ while run:
                         select.play()
                         reset()
                         pause = False
+                        retryctrl = False
             
             pkeys = pygame.key.get_pressed()
             if pkeys[pygame.K_c]:
