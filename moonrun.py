@@ -84,6 +84,7 @@ p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
 #sounds
 
 start = pygame.mixer.Sound('start.wav')
+hover = pygame.mixer.Sound('hover.wav')
 jetpack = pygame.mixer.Sound('jetpack.wav')
 death = pygame.mixer.Sound('death.wav')
 step = pygame.mixer.Sound('step.wav')
@@ -206,10 +207,11 @@ class player (object):
                     if item.img == "item1.png":
                         if self.vel < self.maxvel:
                             self.vel += 4
+                            print ("Speed up!")
                     else:
                         if self.jumpheight < self.maxjumpheight:
                             #self.jumpheight += 2    doesn't work, redo jump
-                            print(self.jumpheight)
+                            print("Jetpack boost!")
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))
 
@@ -322,10 +324,15 @@ def instructionloop(twoplayer):
             window.blit(info2, (0,0))
         else:
             window.blit(info1, (0,0))
-        pygame.display.update()
-        
+        pygame.display.update()            
+
         events = pygame.event.get()
         for event in events:
+            if event.type == pygame.QUIT:
+                global run
+                run = False
+                trigger = False
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     select.play()
@@ -475,11 +482,10 @@ while run:
             menu = False
             second_menu = True
         
-        for key in pygame.key.get_pressed():
-            if key == True:
-                start.play()
-                menu = False
-                second_menu = True
+        if event.type == pygame.KEYDOWN:
+            start.play()
+            menu = False
+            second_menu = True
         
     while second_menu: # second menu loop
         
@@ -524,7 +530,7 @@ while run:
             pygame.display.update() # updates the display
             
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN: # if the mouse is clicked while on the text
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
                     select.play()
                     twoplayer = False
                     instructionloop(twoplayer)
@@ -540,7 +546,7 @@ while run:
             pygame.display.update()
             
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
                     select.play()
                     twoplayer = True
                     playerlist.append(player2)
