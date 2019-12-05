@@ -307,26 +307,22 @@ def createAndMove(typ,lst,listLimit,randLimit):
         obj.x -= worldvel
 
 def instructionloop(twoplayer):
-    counter = 0
     trigger = True
     
-    while counter < 100 and trigger:
+    while trigger:
         clock.tick(27)
-        counter += 1
         title.draw(window)
         if twoplayer:
             window.blit(info2, (0,0))
         else:
             window.blit(info1, (0,0))
         pygame.display.update()
-
-
-        keys=pygame.key.get_pressed()
-        if keys[pygame.K_o]:
-            trigger = False
-       
-        print(counter)
-        print(trigger)
+        
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    trigger = False
         
 
 class Text: #### creating the text class 
@@ -661,7 +657,7 @@ while run:
 
     #game over 
     
-    if gameovercount > 10:
+    if gameovercount > 20:
         end = True
     
     if not twoplayer:
