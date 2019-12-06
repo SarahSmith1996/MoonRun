@@ -14,16 +14,11 @@ NOTES:
     - OOP optimization 
         - class variables change self to classname?
         - 'stuff' subclass of elements (draw function in element class)?
-        - class for text with draw method??
     - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
     - remove hardcoding
     - sort code: global variables, databases, functions
     - sounds drown each other out
-    - background sprites are lagging 
     - change hole sprite, so meteorites look better on top
-
-    - align text with size(text) -> (width, height) " https://stackoverflow.com/questions/25149892/how-to-get-the-width-of-text-using-pygame
-        - also auto align on screen score with this
 
 
 """
@@ -39,7 +34,6 @@ pygame.init()
 
 #gets current working directory to access all files
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
 
 
 #general game values
@@ -70,6 +64,7 @@ p2colour = pygame.Color('blue')
 
 #images
 night = pygame.image.load('starry.png') 
+gameintro = pygame.image.load('intro.png') 
 info1 = pygame.image.load('info1.png') 
 info2 = pygame.image.load('info2.png') 
 
@@ -82,7 +77,7 @@ p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
 
 
 #sounds
-
+introsound = pygame.mixer.Sound('intro.wav')
 start = pygame.mixer.Sound('start.wav')
 hover = pygame.mixer.Sound('hover.wav')
 jetpack = pygame.mixer.Sound('jetpack.wav')
@@ -434,6 +429,7 @@ gameovercount = 0
 winner = 0
 playtime = 0
 speedcount = 0
+intro = True
 end = False
 replay = False
 menu = True
@@ -444,12 +440,38 @@ highget = True
 firstrun = True
 
 #music for main game
-pygame.mixer.music.load('music.mp3')
-pygame.mixer.music.play(-1,0.0)
+
 
 #main game loop
 run = True
 while run:
+    incount = 0
+    while intro:
+        clock.tick(27)
+        incount += 1
+        window.blit(gameintro, (0,0))
+
+        mask = pygame.Surface((winwidth, winheight))
+        mask = mask.convert()
+        mask.fill(black)
+        mask.set_alpha(255-10*incount)
+        window.blit(mask, (0, 0))
+        if incount == 20:
+            introsound.play()
+            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
+            presents.show_text()
+        pygame.display.update()
+        if incount >= 60:
+            intro = False
+            pygame.mixer.music.load('music.mp3')
+            pygame.mixer.music.play(-1,0.0)
+
+        #leave game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                intro = False
+                run = False
+
     clock.tick(27)
 
     #leave game 
@@ -735,7 +757,7 @@ while run:
                 window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
             else:
                 if not twoplayer:
-                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (fontcolour))
+                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,255,255))
                     window.blit(newscore, (winwidth//2-newscore.get_width()//2,250))
                 else:
                     winnername = smallfont.render("Did you do that on purpose?", 1, (fontcolour))
