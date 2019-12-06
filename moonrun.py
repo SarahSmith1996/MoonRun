@@ -29,6 +29,10 @@ import pygame
 import random
 import pickle
 import os
+import Sounds
+import Display
+import Player
+
 
 pygame.init()
 
@@ -42,18 +46,21 @@ maxscore = 999999
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()
 
+gamewin = Display.Screen(800, 400)
+window = gamewin.create_window()
 
-#window
-winwidth = 800
-winheight = 400
-window = pygame.display.set_mode((winwidth,winheight))
+vsmallfont = Display.Fonts()
+vsmallfont.font_size(15)
+smallfont = Display.Fonts()
+smallfont.font_size(25)
+bigfont = Display.Fonts()
+bigfont.font_size(55)
+fontcolour = Display.Fonts()
+fontcolour.fonts_colours(255,201,14)
 
-#fonts
-font = 'pixel.otf'
+sky = GameProperties.Images()
+backgroundimg = GameProperties.Images()
 
-vsmallfont = pygame.font.Font(font,15)
-smallfont = pygame.font.Font(font, 25)
-bigfont = pygame.font.Font(font, 55)
 
 #Colours
 fontcolour = pygame.Color(255,201,14)
@@ -267,7 +274,7 @@ class scoreboard (object):
 
 
 def redrawGameWindow():
-    window.blit(night,(0,0)) #draws background (starry night)
+    window.blit((sky.get_image("night")),(0,0)) #draws background (starry night)
     bd1.draw(window)
     #bd2.draw(window)
     lunar.draw(window)
@@ -277,11 +284,11 @@ def redrawGameWindow():
     for meteo in meteolist:
         meteo.draw(window)
     for item in itemlist:
-        if item.img=="item1.png":
+        if Items.img=="item1.png":
             otherimg = "item12.png"
         else:
             otherimg = "item22.png"
-        item.draw(window,otherimg)
+        Items.draw(window,otherimg)
     for player in playerlist:
         player.draw(window)
 
@@ -300,9 +307,9 @@ def createAndMove(typ,lst,listLimit,randLimit):
             fall.play()
         elif typ == "i":
             if pygame.time.get_ticks()%2 == 0:
-                x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
+                x = Items(winwidth,winheight-60,worldvel,'item1.png',32,32)
             else:
-                x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
+                x = Items(winwidth,winheight-60,worldvel,'item2.png',32,32)
         #add to objectlist
         lst += [x]
     #move objects at their velocity
@@ -317,6 +324,7 @@ def instructionloop(twoplayer):
         title.draw(window)
         if twoplayer:
             window.blit(info2, (0,0))
+            window.blit((GameProperties.Images.get_images("info1")),(0,0))
         else:
             window.blit(info1, (0,0))
         pygame.display.update()            
@@ -332,6 +340,7 @@ def instructionloop(twoplayer):
                 if event.key == pygame.K_SPACE:
                     select.play()
                     trigger = False
+            window.blit((GameProperties.Images.get_images("info2")), (0,0))
         
 
 class Text: #### creating the text class 
@@ -399,14 +408,17 @@ def reset():
 
 
 #class instances
-title = backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+
+title = Display.Backdrop(0,0,worldvel/2,sky.get_image("night"),800,400)
+bd1 = Display.Backdrop(0,0,worldvel/8,backgroundimg.get_image("background"),800,400)
 #bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
 
-lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
+lunar = Display.BackgroundObjects(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
-player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
+player1 = player(winwidth//2,winheight-85,71,71, (GameProperties.Images.get_image("p1move")), \
+    (GameProperties.Images.get_images("p1stand")), (GameProperties.Images.get_image("p1jump")), 'Player 1')
+player2 = player(winwidth*(2/3),winheight-85,71,71, (GameProperties.Images.get_image("p2move")), \
+    (GameProperties.Images.get_images("p2stand")), (GameProperties.Images.get_image("p2jump")), 'Player 2')
 
 #loads highscores from file
 try:
