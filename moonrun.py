@@ -802,13 +802,17 @@ while run:
     endcount = 0
     while endcredits and endcount <300:
         
-        credit = ["Moon Run","","Game and visuals:","", "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith", "Mohammad Yazdani","","Music:","",\
-            "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems" ,"Available for free at    http://EricSkiff.com/music", "","", "2019"]
+        credit = ["Moon Run","","Game and visuals:","",\
+            "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
+            "Mohammad Yazdani","","Music:","",\
+            "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems", \
+            "Available for free at    http://EricSkiff.com/music","",\
+            "Sounds:      BitKits free VST","", "2019"]
         title.draw(window)
         linecount = 0
         for line in credit:
             linecount += 20
-            i = Text(winwidth//2, 30+linecount, line, font, 15, fontcolour)
+            i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
             i.show_text()
 
         pygame.display.update() 
