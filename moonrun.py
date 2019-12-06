@@ -113,6 +113,11 @@ class player (object):
         self.alive = True
         self.neg = 1
 
+        self.leftof = False
+        self.rightof = False
+        self.ontopof = False
+        self.col = False
+
         #delete if not needed
         self.ontop = True
         self.maxvel = 2.5*worldvel
@@ -125,14 +130,14 @@ class player (object):
     def moving(self, leftB, rightB, jumpB):
         
         if self.alive:
-            if leftB:
+            if leftB and not self.rightof:
                 self.left = True
                 self.x -= self.vel
                 if not self.isJump:
                     self.move = True
                     step.play()
 
-            elif rightB:
+            elif rightB and not self.leftof:
                 self.left = False
                 if self.x <= winwidth:
                     self.x += self.vel
@@ -211,12 +216,23 @@ class player (object):
                     itemlist.pop(itemlist.index(item))
                     
      # for when you get stuck at a meteor 
-        for meteo in meteolist: 
-            if self.x > meteo.x - 50 and self.x < meteo.x + meteo.width and self.y > winheight - 100: 
-                self.vel = 0 
-            else: 
-                self.vel = worldvel+2 
-
+        for meteo in meteolist:
+            if meteo.img=='meteoriteb.png':
+                if meteo.x < self.x + self.width < meteo.x + meteo.width and self.y + self.height > meteo.y: 
+                    self.leftof = True
+                    self.col = True
+                elif meteo.x < self.x < meteo.x + meteo.width and self.y + self.height > meteo.y: 
+                    self.rightof = True
+                    self.col = True
+                elif meteo.x < self.x < meteo.x+meteo.width:  
+                    if meteo.y-meteo.height < self.y+self.height < meteo.y:
+                        self.ontop = True
+                        self.col = True
+        if not self.col:
+            self.leftof = False
+            self.rightof = False
+            self.ontop = False
+        self.col = False
 
 
 class element (object):
