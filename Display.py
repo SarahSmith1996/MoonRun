@@ -4,11 +4,6 @@ pygame.init()
 class Display ():
     pass
 
-    def get_image (self, imgname):
-        self.imgname = imgname
-        if self.imgname in self.imgdict:
-            return self.imgdict[self.imgname]
-
 class Screen (Display):
 
     def __init__(self, width, height):
@@ -60,6 +55,10 @@ class Images (Display):
             "p2stand" : pygame.image.load('p20.png'),
             "p2jump" : [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]}
 
+      def get_image (self, imgname):
+        self.imgname = imgname
+        if self.imgname in self.imgdict:
+            return self.imgdict[self.imgname]
 
 class Background (Images):
 
