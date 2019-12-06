@@ -34,7 +34,7 @@ import pygame
 import random
 import pickle
 import os
-import GameProperties
+import Sounds
 import Display
 import Player
 
