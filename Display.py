@@ -90,7 +90,7 @@ class BackgroundObjects (Background):
 
 class Items (BackgroundObjects):
 
-      def __init__(self,x,y,vel,img,width,height):
+    def __init__(self,x,y,vel,img,width,height):
         self.x = x
         self.y = y
         self.vel = vel
