@@ -208,6 +208,12 @@ class player (object):
                             print(self.jumpheight)
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))
+        # for when you get stuck at a meteor
+        for meteo in meteolist:
+            if self.x > meteo.x - 50 and self.x < meteo.x + meteo.width and self.y > winheight - 100:
+                self.vel = 0
+            else:
+                self.vel = worldvel+2
 
 
 
