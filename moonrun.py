@@ -17,6 +17,7 @@ NOTES:
     - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
     - remove hardcoding
     - sort code: global variables, databases, functions
+    
     - sounds drown each other out
     - change hole sprite, so meteorites look better on top
 
@@ -68,8 +69,8 @@ p2colour = pygame.Color('blue')
 
 
 
-
-class element (object):
+"""
+class element (object): 
 
     def __init__(self,x,y,vel,img,width,height):
         self.x = x
@@ -80,7 +81,7 @@ class element (object):
         self.height = height
 
 
-class backdrop (element):
+class backdrop (element): 
     
     def draw(self, window):
         window.blit(pygame.image.load(self.img), (self.x,self.y))
@@ -192,6 +193,7 @@ def instructionloop(twoplayer):
                     trigger = False
             window.blit((GameProperties.Images.get_images("info2")), (0,0))
         
+"""
 
 class Text: #### creating the text class 
     

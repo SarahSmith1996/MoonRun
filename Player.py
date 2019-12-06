@@ -1,4 +1,8 @@
 import pygame
+import Sounds
+import Display
+import moonrun
+
 pygame.init()
 
 class Player (object):
@@ -34,15 +38,15 @@ class PlayerMovement(Player):
                 self.x -= self.vel
                 if not self.isJump:
                     self.move = True
-                    step.play()
+                    Sounds.step.play()
 
             elif rightB:
                 self.left = False
-                if self.x <= winwidth:
+                if self.x <= Display.winwidth:
                     self.x += self.vel
                 if not self.isJump:
                     self.move = True
-                    step.play()
+                    Sounds.step.play()
             
             else: 
                 self.move = False
@@ -56,14 +60,14 @@ class PlayerMovement(Player):
                 self.jump()
     
     def jump (self):
-        if self.jumpCount >= -self.jumpheight:
-            self.neg = 1
+        if self.jumpCount >= -self.jumpheight: 
+            self.neg = 1 
             if self.jumpCount < 0:
-                self.neg = -1
-            self.y -= (self.jumpCount **2) * 0.25 * self.neg
+                self.neg = -1 
+            self.y -= (self.jumpCount **2) * 0.25 * self.neg 
             self.jumpCount -= 0.5
             if self.neg == 1 and self.x>0: 
-                jetpack.play()
+                Sounds.jetpack.play()
 
         else:
             self.isJump = False
@@ -98,12 +102,12 @@ class PlayerMovement(Player):
     #should maybe move to item class, ideally use sprites instead
     def collision(self):
 
-        self.maxvel = 2.5*worldvel
+        self.maxvel = 2.5* PlayerMovement.worldvel     
         
         self.maxjumpheight = 13
 
         #item
-        for item in itemlist:
+        for item in moonrun.itemlist: 
             if self.x > item.x and self.x < item.x + item.width:
                 if self.y+self.height >= item.y:
 
@@ -114,5 +118,5 @@ class PlayerMovement(Player):
                         if self.jumpheight < self.maxjumpheight:
                             #self.jumpheight += 2    doesn't work, redo jump
                             print(self.jumpheight)
-                    itemsound.play()
-                    itemlist.pop(itemlist.index(item))
+                    Sounds.itemsound.play()
+                    moonrun.itemlist.pop(moonrun.itemlist.index(item))

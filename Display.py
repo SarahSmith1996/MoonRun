@@ -2,7 +2,7 @@ import pygame
 pygame.init()
 
 class Display ():
-    pass
+    pass 
 
 class Screen (Display):
 
@@ -10,7 +10,7 @@ class Screen (Display):
 
         self.winwidth = width
         self.winheight = height
-    
+
     def create_window (self):
         return pygame.display.set_mode((self.winwidth,self.winheight))
 
@@ -55,7 +55,7 @@ class Images (Display):
             "p2stand" : pygame.image.load('p20.png'),
             "p2jump" : [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]}
 
-      def get_image (self, imgname):
+    def get_image (self, imgname):
         self.imgname = imgname
         if self.imgname in self.imgdict:
             return self.imgdict[self.imgname]

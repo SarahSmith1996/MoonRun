@@ -16,3 +16,6 @@ p1stand = pygame.image.load('p10.png')
 p1jump = [pygame.image.load('p1j.png'),pygame.image.load('p1j2.png')]
 p2stand = pygame.image.load('p20.png')
 p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
+
+
+
