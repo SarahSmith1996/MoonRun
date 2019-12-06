@@ -1,5 +1,6 @@
 import pygame
 pygame.init()
+
 class Player (object):
 
     def __init__(self,x,y,width,height,movelist,standimg,jumpimg,name):
