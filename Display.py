@@ -14,7 +14,7 @@ class Screen (Display):
     def create_window (self):
         return pygame.display.set_mode((self.winwidth,self.winheight))
 
-class Text: #### creating the text class 
+class Text(Display): #### creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
         self.x  = x
@@ -39,7 +39,7 @@ class Text: #### creating the text class
 
 class Fonts (Display):
 
-    font = 'pixel.otf'
+    
        
     def font_size (self, size):
         self.size = size

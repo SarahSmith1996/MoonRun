@@ -47,7 +47,10 @@ maxscore = 999999
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()
 
-gamewin = Display.Screen(800, 400)
+winwidth = 800
+winheight = 400
+
+gamewin = Display.Screen(winwidth, winheight)
 window = gamewin.create_window()
 
 vsmallfont = Display.Fonts()
@@ -59,7 +62,7 @@ bigfont.font_size(55)
 fontcolour = Display.Fonts()
 fontcolour.fonts_colours(255,201,14)
 
-
+font = 'pixel.otf'
 #Colours
 fontcolour = pygame.Color(255,201,14)
 white = pygame.Color('white')
