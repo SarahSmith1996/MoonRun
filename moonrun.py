@@ -233,14 +233,14 @@ class player (object):
         # interaction with meteor
         for meteo in meteolist:
             if not meteo.inhole:
-                if meteo.x < self.x + self.width - 14 < meteo.x + meteo.width and self.y + self.height > meteo.y + 10:
+                if meteo.x < self.x + self.width - 20 < meteo.x + meteo.width and self.y + self.height > meteo.y + 10:
                     self.leftof = True
                     self.col = True
                 elif meteo.x < self.x < meteo.x + meteo.width and self.y + self.height > meteo.y + 10 : 
                     self.rightof = True
                     self.col = True
 
-                if meteo.x-5 <= self.x <= meteo.x+meteo.width+5:
+                if meteo.x <= self.x+self.width//2 <= meteo.x+meteo.width+10:
                     self.ontop = True
                     self.floorpos = pOntoppos
                     #print("ontop")
@@ -455,7 +455,7 @@ def playerSelect():
         if text1.mouse_over() or text2.mouse_over():
             soundtrigger = True
             if soundtrigger == True:
-                select.play()               # Sound can be changed if necessary
+                hover.play()               # Sound can be changed if necessary
                 soundtrigger = False
         
         text1ctrl = True
@@ -511,7 +511,7 @@ def instructionloop(twoplayer):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    select.play()
+                    start.play()
                     trigger = False
 
 
