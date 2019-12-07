@@ -29,13 +29,12 @@ maxscore = 999999
 winwidth = 800
 winheight = 400
 window = pygame.display.set_mode((winwidth,winheight))
+pFloorpos = winheight-87
+pOntoppos = winheight-87-64
 
 #fonts
 font = 'pixel.otf'
 
-vsmallfont = pygame.font.Font(font,15)
-smallfont = pygame.font.Font(font, 25)
-bigfont = pygame.font.Font(font, 55)
 
 #Colours
 fontcolour = pygame.Color(255,201,14)
@@ -87,18 +86,18 @@ class player (object):
 
         self.vel = worldvel+2
         self.isJump = False
-        self.jumpheight = 15
+        self.jumpheight = 10
         self.jumpCount = self.jumpheight
+        self.fallCount = 0
         self.left = False
         self.step = 0
         self.move = False
         self.alive = True
-        self.neg = 1
 
         self.leftof = False
         self.rightof = False
         self.ontop = False
-        self.floorpos = 315
+        self.floorpos = pFloorpos
         self.col = False
 
         self.maxvel = 2.5*worldvel
@@ -108,17 +107,29 @@ class player (object):
     def moving(self, leftB, rightB, jumpB):
 
         #default movement
+        self.platform()
         self.x -= worldvel
         self.collision()
+
+        #gravity 
         if self.alive:
-            if self.y < self.floorpos:
-                self.y += 14
+            falldistance= (self.fallCount**2) * 0.25
+            if self.y + falldistance <= self.floorpos:
+                if self.jumpCount == 0:
+                    self.y += falldistance
+                    self.fallCount += 0.5
+                else:
+                    if self.jumpCount == self.jumpheight and self.y < pFloorpos and not self.isJump:
+                        if not self.ontop:
+                            self.y += 8
+                    
             else:
                 if self.jumpCount < self.jumpheight:
                     self.y = self.floorpos
                     self.isJump = False
                     self.jumpCount = self.jumpheight
-        
+                    self.fallCount = 0
+
         #controls
         if self.alive:
             if leftB and not self.rightof:
@@ -150,7 +161,7 @@ class player (object):
     def jump (self):
 
         if self.jumpCount > 0:
-            self.y -= 19
+            self.y -= 8
             self.jumpCount -= 0.5
             jetpack.play()
 
@@ -196,32 +207,13 @@ class player (object):
                             self.jumpheight += 2
                             print("Jetpack boost!")
                     itemsound.play()
-                    itemlist.pop(itemlist.index(item))
-                    
-        # interaction with meteor
-        for meteo in meteolist:
-            if meteo.img=='meteoriteb.png':
-                if meteo.x < self.x + self.width < meteo.x + meteo.width and self.y + self.height > meteo.y: 
-                    self.leftof = True
-                    self.col = True
-                elif meteo.x < self.x < meteo.x + meteo.width and self.y + self.height > meteo.y: 
-                    self.rightof = True
-                    self.col = True
-
-                if meteo.x <= self.x+self.width <= meteo.x+meteo.width:
-                    self.ontop = True
-                    self.floorpos = 245  
-                    
+                    itemlist.pop(itemlist.index(item))   
 
         if not self.col:
             self.leftof = False
             self.rightof = False
-        if not self.ontop:
-            self.floorpos = 309
         self.col = False
-        self.ontop = False
 
-          
         #player death
         for hole in holelist:
             if self.x > hole.x + 5 and self.x < hole.x+hole.width-self.width and self.y >= winheight-91:
@@ -235,6 +227,28 @@ class player (object):
             death.play()
             self.alive = False
             self.y += 2000
+
+    def platform(self):
+
+        # interaction with meteor
+        for meteo in meteolist:
+            if not meteo.inhole:
+                if meteo.x < self.x + self.width - 14 < meteo.x + meteo.width and self.y + self.height > meteo.y + 10:
+                    self.leftof = True
+                    self.col = True
+                elif meteo.x < self.x < meteo.x + meteo.width and self.y + self.height > meteo.y + 10 : 
+                    self.rightof = True
+                    self.col = True
+
+                if meteo.x-5 <= self.x <= meteo.x+meteo.width+5:
+                    self.ontop = True
+                    self.floorpos = pOntoppos
+                    #print("ontop")
+        if not self.ontop:
+            self.floorpos = pFloorpos
+        #print("Notontop")
+        self.ontop = False
+        
 
 class element (object):
 
@@ -262,6 +276,25 @@ class displayObject (element):
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
+
+class Meteorite (displayObject):
+
+    inhole = False
+
+    def animate(self):
+        #meteorite animation    
+        if self.y == winheight - 80 - 32:
+            crash.play()
+            
+        if self.y < winheight - 80:
+            self.y += 32
+        else:
+            for hole in holelist:
+                if self.x > hole.x and self.x < hole.x+hole.width-self.width:
+                    self.y += 32
+                    self.inhole = True
+            self.img='meteoriteb.png'
+    
 
 class Item (displayObject):
 
@@ -555,6 +588,13 @@ def endScreen():
                                        Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
         goprompt.show_text()
             
+            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
+            winner.move = True
+            winner.left = False
+            winner.x = winwidth/2 -winner.width/2
+            winner.y = winheight/2
+            winner.draw(window)
+            winnername.show_text()
             
         keys = pygame.key.get_pressed()
 
@@ -655,6 +695,7 @@ def redrawGameWindow():
     for holes in holelist:
         holes.draw(window)
     for meteo in meteolist:
+        meteo.animate()
         meteo.draw(window)
     for item in itemlist:
         if item.img=="item1.png":
@@ -676,7 +717,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
         if typ == "h":
             x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
         elif typ == "m":
-            x = displayObject(winwidth,0,worldvel,'meteorite.png',64,64)
+            x = Meteorite(winwidth,0,worldvel,'meteorite.png',64,64)
             fall.play()
         elif typ == "i":
             if pygame.time.get_ticks()%2 == 0:
@@ -719,7 +760,11 @@ def reset():
         player.alive = True
         player.y = winheight-player.height-16
         player.isJump = False
-        player.jumpCount = 10
+        player.ontop = False
+        player.leftof = False
+        player.rightof = False
+        player.jumpheight = 10
+        player.jumpCount = player.jumpheight
         player.neg = 1
         player.vel = (5/4)*worldvel
 
@@ -737,8 +782,8 @@ title = backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
 lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
-player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
+player1 = player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
+player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
 
 
 
@@ -796,7 +841,7 @@ while run:
 
     #randomly generate and move holes, meteors and items
     createAndMove('h',holelist,1,50)
-    createAndMove('m',meteolist,3,100)
+    createAndMove('m',meteolist,1,100)
     createAndMove('i',itemlist,1,200)
     
     # lunar module regularly apperars
@@ -805,17 +850,6 @@ while run:
     else: 
         lunar.x = winwidth
         
-    #meteorite animation    
-    for meteo in meteolist:
-        if meteo.y == winheight - 80 - 32:
-            crash.play()
-        if meteo.y < winheight - 80:
-            meteo.y += 32
-        else:
-            for hole in holelist:
-                if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
-                    meteo.y += 32
-            meteo.img='meteoriteb.png'
     
     #player control
     player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
