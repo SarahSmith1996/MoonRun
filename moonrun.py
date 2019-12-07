@@ -344,6 +344,11 @@ class scoreboard (object):
         self.scoreList += [newscore]
         self.scoreList = sorted(self.scoreList,reverse=True)
         self.scoreList.pop(self.LENGTH+1)
+        if newscore in self.scoreList:
+            return True
+        else:
+            return False
+
 
     def reset(self):
         for i in range(self.LENGTH):
@@ -407,11 +412,14 @@ def startScreen():
                     second_menu = True
                     menu = False
         title.draw(window)
-        
+    
         text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
-        text.show_text()
-        
-        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
+        text.show_text() 
+        if (pygame.time.get_ticks()//500)%2:
+            begincolour = fontcolour
+        else:
+            begincolour = white
+        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, begincolour)
         text2.show_text()
 
         pygame.display.update()
@@ -420,6 +428,7 @@ def playerSelect():
     global run
     global second_menu
     global twoplayer
+    instruc = False
     while second_menu: # second menu loop
         
         title.draw(window)
@@ -433,20 +442,19 @@ def playerSelect():
         text1.show_text() # method to show the text
         text2.show_text()
         pygame.display.update()
-
         keys=pygame.key.get_pressed()
 
         if keys[pygame.K_2]:
             select.play()
             twoplayer = True
             playerlist.append(player2)
-            instructionloop(twoplayer)
+            instruc = True
             second_menu = False
         
         if keys[pygame.K_1]:
             select.play()
             twoplayer = False
-            instructionloop(twoplayer)
+            instruc = True
             second_menu = False
         
         if keys[pygame.K_ESCAPE]:
@@ -473,7 +481,7 @@ def playerSelect():
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_2: # if the mouse is clicked while on the text
                     select.play()
                     twoplayer = False
-                    instructionloop(twoplayer)
+                    instruc = True
                     second_menu = False
                     text1ctrl = False
         
@@ -490,9 +498,11 @@ def playerSelect():
                     select.play()
                     twoplayer = True
                     playerlist.append(player2)
-                    instructionloop(twoplayer)
+                    instruc = True
                     second_menu = False
                     text2ctrl = False
+    if instruc:
+        instructionloop(twoplayer)
 
 def instructionloop(twoplayer):
     trigger = True
@@ -608,6 +618,10 @@ def endScreen():
             
         else:
             if not twoplayer:
+                if newhigh:
+                    congratulations = Text(winwidth//2, 260, "New high score".format(str(myscore).zfill(4)), font, 25, p1colour)
+                    if (pygame.time.get_ticks()//500)%2: 
+                        congratulations.show_text()
                 newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, 25, white)
                 newscore.show_text()
                 
@@ -631,7 +645,7 @@ def endScreen():
             endrun = False
 
         if keys[pygame.K_h]:
-            pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
+            pygame.draw.rect(window,(fontcolour),(winwidth/2-250,0,500,400))
             linecount = 0
             hiscores = Text(winwidth//2, 100, "High Scores:", font, 25, black) 
             hiscores.show_text()
@@ -741,6 +755,7 @@ def reset():
     global playerlist
     global itemlist
     global highget
+    global newhigh
     global speedcount
     
     worldvel = 8
@@ -807,6 +822,7 @@ endcredits = False
 second_menu = False
 twoplayer = False
 highget = True
+newhigh = False
 firstrun = True
 
 
@@ -878,7 +894,7 @@ while run:
             myscore = playtime
             gameovercount += 1
             if highget:
-                highscore.addscore(myscore)
+                newhigh = highscore.addscore(myscore)
                 highget = False
         if player1.alive:
             playtime += 1 
