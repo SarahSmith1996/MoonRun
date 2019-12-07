@@ -541,41 +541,41 @@ def endScreen():
     while endrun:
         clock.tick(27)
 
-            title.draw(window)
-            gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
-            gomsg.show_text()
-            goprompt = Text(winwidth//2, 350, "Restart [R]                           High Score[H]\
-                                           Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
-            goprompt.show_text()
+        title.draw(window)
+        gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
+        gomsg.show_text()
+        goprompt = Text(winwidth//2, 350, "Restart [R]                           High Score[H]\
+                                       Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
+        goprompt.show_text()
             
             
-            keys = pygame.key.get_pressed()
+        keys = pygame.key.get_pressed()
 
-            if winner != 0:
-                
-                winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
-                winner.move = True
-                winner.left = False
-                winner.x = winwidth/2 -winner.width/2
-                winner.y = winheight/2
-                winner.draw(window)
-                winnername.show_text()
+        if winner != 0:
+            
+            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
+            winner.move = True
+            winner.left = False
+            winner.x = winwidth/2 -winner.width/2
+            winner.y = winheight/2
+            winner.draw(window)
+            winnername.show_text()
+            
+        else:
+            if not twoplayer:
+                newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, 25, white)
+                newscore.show_text()
                 
             else:
-                if not twoplayer:
-                    newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, 25, white)
-                    newscore.show_text()
-                    
-                else:
-                    winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, 25, fontcolour)
-                    winnername.show_text()
-                    
-            
-            
-            if keys[pygame.K_r]:
-                select.play()
-                reset()
-                endrun = False
+                winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, 25, fontcolour)
+                winnername.show_text()
+                
+        
+        
+        if keys[pygame.K_r]:
+            select.play()
+            reset()
+            endrun = False
 
         if keys[pygame.K_e]:
             select.play()
@@ -585,17 +585,17 @@ def endScreen():
             menu = True
             endrun = False
 
-            if keys[pygame.K_h]:
-                pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
-                linecount = 0
-                hiscores = Text(winwidth//2, 100, "High Scores:", font, 25, black) 
-                hiscores.show_text()
-                
-                for score in highscore.scoreList:
-                    linecount += 1
-                    i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, 25, black)
-                    i.show_text()
-                    pygame.display.update()
+        if keys[pygame.K_h]:
+            pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
+            linecount = 0
+            hiscores = Text(winwidth//2, 100, "High Scores:", font, 25, black) 
+            hiscores.show_text()
+            
+            for score in highscore.scoreList:
+                linecount += 1
+                i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, 25, black)
+                i.show_text()
+                pygame.display.update()
                     
 
         if keys[pygame.K_ESCAPE]:
