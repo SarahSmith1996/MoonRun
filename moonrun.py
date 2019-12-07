@@ -574,6 +574,7 @@ def endScreen():
     global menu
     global run
     global endcredits
+    global winner
     pygame.mixer.music.load('gameover.mp3')
     pygame.mixer.music.play(-1,0.0)
 
@@ -588,14 +589,8 @@ def endScreen():
                                        Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
         goprompt.show_text()
             
-            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
-            winner.move = True
-            winner.left = False
-            winner.x = winwidth/2 -winner.width/2
-            winner.y = winheight/2
-            winner.draw(window)
-            winnername.show_text()
-            
+       
+        
         keys = pygame.key.get_pressed()
 
         if winner != 0:
