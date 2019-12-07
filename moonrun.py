@@ -326,7 +326,7 @@ while run:
         window.blit(mask, (0, 0))
         if incount == 20:
             introsound.play()
-            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
+            presents = Display.Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
             presents.show_text()
         pygame.display.update()
         if incount >= 60:
@@ -361,10 +361,10 @@ while run:
                 
         title.draw(window)
         
-        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
+        text = Display.Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
         text.show_text()
         
-        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
+        text2 = Display.Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
         text2.show_text()
 
         pygame.display.flip()
@@ -389,8 +389,8 @@ while run:
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+        text1 = Display.Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
+        text2 = Display.Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
         text1.show_text() # method to show the text
         text2.show_text()
         pygame.display.update()
@@ -416,7 +416,7 @@ while run:
         
         text1ctrl = True
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
-            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
+            text1 = Display.Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -432,7 +432,7 @@ while run:
         
         text2ctrl = True            
         while text2.mouse_over() and text2ctrl:
-            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
+            text2 = Display.Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -495,15 +495,15 @@ while run:
                     run = False
                     pause = False
             
-            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)
-            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
+            contmsg = Display.Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)
+            retrymsg = Display.Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
             contmsg.show_text()
             retrymsg.show_text()
             pygame.display.flip()
             
             contctrl = True
             while contmsg.mouse_over() and contctrl:
-                contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
+                contmsg = Display.Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
                 contmsg.show_text()
                 retrymsg.show_text()
                 pygame.display.flip()
@@ -515,7 +515,7 @@ while run:
 
             retryctrl = True            
             while retrymsg.mouse_over() and retryctrl:
-                retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
+                retrymsg = Display.Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
                 retrymsg.show_text()
                 contmsg.show_text()
                 pygame.display.flip()
@@ -688,7 +688,7 @@ while run:
         linecount = 0
         for line in credit:
             linecount += 20
-            i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
+            i = Display.Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
             i.show_text()
 
         pygame.display.update() 
