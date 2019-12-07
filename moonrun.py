@@ -418,8 +418,6 @@ def playerSelect():
             second_menu = False
         
         text1ctrl = True
-
-
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
             text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
             title.draw(window)
@@ -428,7 +426,7 @@ def playerSelect():
             pygame.display.update() # updates the display
             
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_2: # if the mouse is clicked while on the text
                     select.play()
                     twoplayer = False
                     instructionloop(twoplayer)
@@ -444,7 +442,7 @@ def playerSelect():
             pygame.display.update()
             
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_1:
                     select.play()
                     twoplayer = True
                     playerlist.append(player2)
@@ -474,6 +472,7 @@ def instructionloop(twoplayer):
                 if event.key == pygame.K_SPACE:
                     select.play()
                     trigger = False
+
 
 def pauseMenu():
     pause = True
