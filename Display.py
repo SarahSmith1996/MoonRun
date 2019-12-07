@@ -104,7 +104,7 @@ class Backdrop (Background):
     
     def draw(self, window):
         window.blit(pygame.image.load(self.img), (self.x,self.y))
-        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))
+        window.blit(pygame.image.load(self.img), (self.x+self.winwidth,self.y))
         if self.x > -self.winwidth:
             self.x -= self.vel
         else:

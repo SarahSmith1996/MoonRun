@@ -33,6 +33,7 @@ import os
 import Sounds
 import Display
 import Player
+import Images
 
 
 pygame.init()
@@ -114,7 +115,7 @@ class Item (displayObject):
             window.blit(pygame.image.load(self.img),(self.x,self.y))
         else:
             window.blit(pygame.image.load(secimg),(self.x,self.y))
-
+"""
 class scoreboard (object):
     LENGTH = 4
 
@@ -132,7 +133,8 @@ class scoreboard (object):
         for i in range(self.LENGTH):
             self.scoreList[i] = 0
 
-
+"""
+"""
 def redrawGameWindow():
     window.blit((sky.get_image("night")),(0,0)) #draws background (starry night)
     bd1.draw(window)
@@ -184,7 +186,7 @@ def instructionloop(twoplayer):
         title.draw(window)
         if twoplayer:
             window.blit(info2, (0,0))
-            window.blit((GameProperties.Images.get_images("info1")),(0,0))
+            window.blit((Display.Images.get_images("info1")),(0,0))
         else:
             window.blit(info1, (0,0))
         pygame.display.update()            
@@ -202,7 +204,7 @@ def instructionloop(twoplayer):
                     trigger = False
             window.blit((GameProperties.Images.get_images("info2")), (0,0))
         
-
+"""
 class Text: #### creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
@@ -271,16 +273,16 @@ def reset():
 
 #class instances
 
-title = Display.Backdrop(0,0,worldvel/2,sky.get_image("night"),800,400)
-bd1 = Display.Backdrop(0,0,worldvel/8,backgroundimg.get_image("background"),800,400)
+title = Display.Backdrop(0,0,worldvel/2,Display.Images.get_image("night"),800,400)
+bd1 = Display.Backdrop(0,0,worldvel/8,Display.Images.get_image("background"),800,400)
 #bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
 
 lunar = Display.BackgroundObjects(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
-player1 = player(winwidth//2,winheight-85,71,71, (GameProperties.Images.get_image("p1move")), \
-    (GameProperties.Images.get_images("p1stand")), (GameProperties.Images.get_image("p1jump")), 'Player 1')
-player2 = player(winwidth*(2/3),winheight-85,71,71, (GameProperties.Images.get_image("p2move")), \
-    (GameProperties.Images.get_images("p2stand")), (GameProperties.Images.get_image("p2jump")), 'Player 2')
+player1 = Player(winwidth//2,winheight-85,71,71, (Display.Images.get_image("p1move")), \
+    (Display.Images.get_images("p1stand")), (Display.Images.get_image("p1jump")), 'Player 1')
+player2 = Player(winwidth*(2/3),winheight-85,71,71, (Display.Images.get_image("p2move")), \
+    (Display.Images.get_images("p2stand")), (Display.Images.get_image("p2jump")), 'Player 2')
 
 #loads highscores from file
 try:
@@ -323,7 +325,7 @@ while run:
     while intro:
         clock.tick(27)
         incount += 1
-        window.blit(gameintro, (0,0))
+        window.blit(Images.gameintro, (0,0))
 
         mask = pygame.Surface((winwidth, winheight))
         mask = mask.convert()
@@ -331,7 +333,7 @@ while run:
         mask.set_alpha(255-10*incount)
         window.blit(mask, (0, 0))
         if incount == 20:
-            introsound.play()
+            Sounds.introsound.play()
             presents = Display.Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255), window)
             presents.show_text()
         pygame.display.update()
@@ -383,7 +385,7 @@ while run:
             if event.key == pygame.K_ESCAPE:
                 run = False
             else:
-                start.play()
+                Sounds.start.play()
                 second_menu = True
             menu = False
             
@@ -404,14 +406,14 @@ while run:
         keys=pygame.key.get_pressed()
 
         if keys[pygame.K_2]:
-            select.play()
+            Sounds.select.play()
             twoplayer = True
             playerlist.append(player2)
             instructionloop(twoplayer)
             second_menu = False
         
         if keys[pygame.K_1]:
-            select.play()
+            Sounds.select.play()
             twoplayer = False
             instructionloop(twoplayer)
             second_menu = False
@@ -430,7 +432,7 @@ while run:
             
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
-                    select.play()
+                    Sounds.select.play()
                     twoplayer = False
                     instructionloop(twoplayer)
                     second_menu = False
@@ -446,7 +448,7 @@ while run:
             
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
-                    select.play()
+                    Sounds.select.play()
                     twoplayer = True
                     playerlist.append(player2)
                     instructionloop(twoplayer)
@@ -473,7 +475,7 @@ while run:
     #meteorite animation    
     for meteo in meteolist:
         if meteo.y == winheight - 80 - 32:
-            crash.play()
+            Sounds.crash.play()
         if meteo.y < winheight - 80:
             meteo.y += 32
         else:
@@ -490,7 +492,7 @@ while run:
 
     #pause game
     if keys[pygame.K_p]:
-        select.play()
+        Sounds.select.play()
         pause = True
         while pause:
             clock.tick(27)
@@ -515,7 +517,7 @@ while run:
                 pygame.display.flip()
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        select.play()
+                        Sounds.select.play()
                         pause = False
                         contctrl = False
 
@@ -527,14 +529,14 @@ while run:
                 pygame.display.flip()
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        select.play()
+                        Sounds.select.play()
                         reset()
                         pause = False
                         retryctrl = False
             
             pkeys = pygame.key.get_pressed()
             if pkeys[pygame.K_c]:
-                select.play()
+                Sounds.select.play()
                 pause = False
 
             if pkeys[pygame.K_r]:
@@ -549,13 +551,13 @@ while run:
         for hole in holelist:
             if player.x > hole.x + 5 and player.x < hole.x+hole.width-player.width and player.y >= winheight-91:
                 if player.alive:
-                    death.play()
+                    Sounds.death.play()
                 player.alive = False
                 player.y += 15
 
         if player.x <= -50 and player.alive:
             player.isJump = False #so that jetpack doesn't drown out death sound
-            death.play()
+            Sounds.death.play()
             player.alive = False
             player.y += 2000
 
@@ -563,7 +565,7 @@ while run:
     speedcount += 1
     if speedcount % 500 == 0:
         worldvel *= 1.5
-        speed.play()
+        Sounds.speed.play()
     player1.vel = worldvel+2
     player2.vel = worldvel+2
     bd1.vel = worldvel/8
@@ -647,12 +649,12 @@ while run:
             
             
             if keys[pygame.K_r]:
-                select.play()
+                Sounds.select.play()
                 reset()
                 endrun = False
 
             if keys[pygame.K_e]:
-                select.play()
+                Sounds.select.play()
                 reset()
                 if len(playerlist)>1:
                     playerlist.pop()
@@ -668,7 +670,7 @@ while run:
                     window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (290,100+linecount*40))
 
             if keys[pygame.K_ESCAPE]:
-                start.play()
+                Sounds.start.play()
                 run = False
                 endrun = False
                 endcredits = True
