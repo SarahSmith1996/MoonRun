@@ -272,7 +272,7 @@ class Item (displayObject):
         else:
             window.blit(pygame.image.load(secimg),(self.x,self.y))
 
-class Text: #### creating the text class 
+class Text: # creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
         self.x  = x
@@ -544,31 +544,34 @@ class gameMenu ():
             clock.tick(27)
 
             title.draw(window)
-            gomsg = bigfont.render("Game Over", 1, (255,201,14))
-            window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
-            goprompt = vsmallfont.render (\
-"Restart [R]                           High Score[H]                           Main Menu[E]                           Exit[ESC]",\
-            1,(255,201,14))
-            window.blit (goprompt, (winwidth//2-goprompt.get_width()//2,350))
+            gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
+            gomsg.show_text()
+            goprompt = Text(winwidth//2, 350, "Restart [R]                           High Score[H]\
+                                           Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
+            goprompt.show_text()
             
             
             keys = pygame.key.get_pressed()
 
             if winner != 0:
-                winnername = smallfont.render("Winner:  "+winner.name, 1, (fontcolour))
+                
+                winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
                 winner.move = True
                 winner.left = False
                 winner.x = winwidth/2 -winner.width/2
                 winner.y = winheight/2
                 winner.draw(window)
-                window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
+                winnername.show_text()
+                
             else:
                 if not twoplayer:
-                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,255,255))
-                    window.blit(newscore, (winwidth//2-newscore.get_width()//2,250))
+                    newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, 25, white)
+                    newscore.show_text()
+                    
                 else:
-                    winnername = smallfont.render("Did you do that on purpose?", 1, (fontcolour))
-                    window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
+                    winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, 25, fontcolour)
+                    winnername.show_text()
+                    
             
             
             if keys[pygame.K_r]:
@@ -587,10 +590,15 @@ class gameMenu ():
             if keys[pygame.K_h]:
                 pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
                 linecount = 0
-                window.blit(smallfont.render("High Scores:", 1, (0,0,0)), (290,100))
+                hiscores = Text(winwidth//2, 100, "High Scores:", font, 25, black) 
+                hiscores.show_text()
+                
                 for score in highscore.scoreList:
                     linecount += 1
-                    window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (290,100+linecount*40))
+                    i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, 25, black)
+                    i.show_text()
+                    pygame.display.update()
+                    
 
             if keys[pygame.K_ESCAPE]:
                 start.play()
@@ -837,8 +845,8 @@ while run:
             playtime += 1 
 
         if run:
-            timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
-            window.blit(timer, (winwidth-timer.get_width()-20,20))
+            timer = Text(winwidth-60, 20, str(playtime).zfill(4), font, 25, fontcolour)
+            timer.show_text()
             pygame.display.update()
 
     else:
