@@ -193,7 +193,6 @@ def instructionloop(twoplayer):
                     trigger = False
             window.blit((GameProperties.Images.get_images("info2")), (0,0))
         
-"""
 
 class Text: #### creating the text class 
     
@@ -217,6 +216,8 @@ class Text: #### creating the text class
             return True
         else:
             return False
+
+"""
 
 def reset():
     global worldvel
