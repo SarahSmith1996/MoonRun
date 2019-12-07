@@ -2,26 +2,30 @@ import pygame
 pygame.init()
 
 class Display ():
-    pass 
-
-class Screen (Display):
-
-    def __init__(self, width, height):
+    
+    def __init__(self, width=800, height=400):
 
         self.winwidth = width
         self.winheight = height
+
+class Screen (Display):
+    
+    def __init__(self):
+        super().__init__()
+
 
     def create_window (self):
         return pygame.display.set_mode((self.winwidth,self.winheight))
 
 class Text(Display): #### creating the text class 
     
-    def __init__(self, x, y, text, font, fontsize, colour):
+    def __init__(self, x, y, text, font, fontsize, colour, window):
         self.x  = x
         self.y = y
         self.text = text
         self.fontsize = fontsize
         self.colour = colour
+        self.window = window
         self.font = pygame.font.Font(font, self.fontsize) # creating the font
         self.textsurf = self.font.render(self.text, True, self.colour) # creating the text surface
         self.rect = self.textsurf.get_rect() # creating the rectangle for the text
@@ -29,7 +33,7 @@ class Text(Display): #### creating the text class
     
     def show_text(self): # method to show the text
         self.rect.center = (self.x,self.y) # Puts the center of the text at the x and y co ordinates
-        window.blit(self.textsurf,self.rect) # prints one surface onto another
+        self.window.blit(self.textsurf,self.rect) # prints one surface onto another
         
     def mouse_over(self): # checks whether the mouse is over a the text
         if self.rect.collidepoint(pygame.mouse.get_pos()):
@@ -50,7 +54,8 @@ class Fonts (Display):
         return pygame.Color(self.red, self.blue, self.green)
 
 class Colours (Display):
-
+    
+    fontcolour = pygame.Color(255,201,14)
     white = pygame.Color('white')
     black = pygame.Color('black')
     p1colour = pygame.Color('red')
@@ -100,7 +105,7 @@ class Backdrop (Background):
     def draw(self, window):
         window.blit(pygame.image.load(self.img), (self.x,self.y))
         window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))
-        if self.x > -winwidth:
+        if self.x > -self.winwidth:
             self.x -= self.vel
         else:
             self.x = 0
