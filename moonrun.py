@@ -579,8 +579,9 @@ while run:
             playtime += 1 
 
         if run:
-            timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
-            window.blit(timer, (winwidth-timer.get_width()-20,20))
+            # Displays timer/score in upper right corner.
+            timer = Display.Text(winwidth-20, 20, str(playtime).zfill(4), font, 25, (255,201,14))
+            timer.show_text()
             pygame.display.update()
 
     else:
