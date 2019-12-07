@@ -607,6 +607,8 @@ while run:
             clock.tick(27)
 
             title.draw(window)
+
+            # Game Over screen message.
             gomsg = Display.Text(winwidth//2, 100, "Game Over", font, 55, (255,201,14))
             gomsg.showtext()
             
