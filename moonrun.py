@@ -53,6 +53,9 @@ winheight = 400
 gamewin = Display.Screen(winwidth, winheight)
 window = gamewin.create_window()
 
+# Maybe make vsmallfont = 15 to use as constants to we can use them as 
+# text size for the Text class and can change the size by changing these variables
+# so that the sizes are not hard coded.
 vsmallfont = Display.Fonts()
 vsmallfont.font_size(15)
 smallfont = Display.Fonts()
