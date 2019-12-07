@@ -314,324 +314,322 @@ class scoreboard (object):
             self.scoreList[i] = 0
 
 
-class gameMenu ():
-    
-    def introPlay():
-        incount = 0
-        global intro
-        global run
-        while intro:
-            clock.tick(27)
-            incount += 1
-            window.blit(gameintro, (0,0))
+def introPlay():
+    incount = 0
+    global intro
+    global run
+    while intro:
+        clock.tick(27)
+        incount += 1
+        window.blit(gameintro, (0,0))
 
-            mask = pygame.Surface((winwidth, winheight))
-            mask = mask.convert()
-            mask.fill(black)
-            mask.set_alpha(255-10*incount)
-            window.blit(mask, (0, 0))
-            if incount == 20:
-                introsound.play()
-                presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
-                presents.show_text()
-            pygame.display.update()
-            if incount >= 60:
+        mask = pygame.Surface((winwidth, winheight))
+        mask = mask.convert()
+        mask.fill(black)
+        mask.set_alpha(255-10*incount)
+        window.blit(mask, (0, 0))
+        if incount == 20:
+            introsound.play()
+            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
+            presents.show_text()
+        pygame.display.update()
+        if incount >= 60:
+            intro = False
+            pygame.mixer.music.load('music.mp3')
+            pygame.mixer.music.play(-1,0.0)
+        #leave game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 intro = False
-                pygame.mixer.music.load('music.mp3')
-                pygame.mixer.music.play(-1,0.0)
-            #leave game
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    intro = False
-                    run = False
-    
-
-    def startScreen():
-        #game menu
-        global menu
-        global second_menu
-        global run
-        while menu:
-            clock.tick(27)
-
-            #leave game 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                    menu = False
-            
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    start.play()
-                    menu = False
-                    second_menu = True
-            
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
-                    else:
-                        start.play()
-                        second_menu = True
-                        menu = False
-            title.draw(window)
-            
-            text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
-            text.show_text()
-            
-            text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
-            text2.show_text()
-
-            pygame.display.update()
-    
-    def playerSelect():
-        global run
-        global second_menu
-        global twoplayer
-        while second_menu: # second menu loop
-            
-            title.draw(window)
-            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-            
-            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
-            text1.show_text() # method to show the text
-            text2.show_text()
-            pygame.display.update()
-
-            keys=pygame.key.get_pressed()
-
-            if keys[pygame.K_2]:
-                select.play()
-                twoplayer = True
-                playerlist.append(player2)
-                gameMenu.instructionloop(twoplayer)
-                second_menu = False
-            
-            if keys[pygame.K_1]:
-                select.play()
-                twoplayer = False
-                gameMenu.instructionloop(twoplayer)
-                second_menu = False
-            
-            if keys[pygame.K_ESCAPE]:
                 run = False
-                second_menu = False
-            
-            text1ctrl = True
 
 
-            while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
-                text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
-                title.draw(window)
-                text1.show_text()
-                text2.show_text()
-                pygame.display.update() # updates the display
-                
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
-                        select.play()
-                        twoplayer = False
-                        gameMenu.instructionloop(twoplayer)
-                        second_menu = False
-                        text1ctrl = False
-            
-            text2ctrl = True            
-            while text2.mouse_over() and text2ctrl:
-                text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
-                title.draw(window)
-                text1.show_text()
-                text2.show_text()
-                pygame.display.update()
-                
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
-                        select.play()
-                        twoplayer = True
-                        playerlist.append(player2)
-                        gameMenu.instructionloop(twoplayer)
-                        second_menu = False
-                        text2ctrl = False
+def startScreen():
+    #game menu
+    global menu
+    global second_menu
+    global run
+    while menu:
+        clock.tick(27)
 
-    def instructionloop(twoplayer):
-        trigger = True
-        global run
-        while trigger:
-            clock.tick(27)
-            title.draw(window)
-            if twoplayer:
-                window.blit(info2, (0,0))
-            else:
-                window.blit(info1, (0,0))
-            pygame.display.update()            
-
-            events = pygame.event.get()
-            for event in events:
-                if event.type == pygame.QUIT:
+        #leave game 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                menu = False
+        
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                start.play()
+                menu = False
+                second_menu = True
+        
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     run = False
+                else:
+                    start.play()
+                    second_menu = True
+                    menu = False
+        title.draw(window)
+        
+        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
+        text.show_text()
+        
+        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
+        text2.show_text()
+
+        pygame.display.update()
+
+def playerSelect():
+    global run
+    global second_menu
+    global twoplayer
+    while second_menu: # second menu loop
+        
+        title.draw(window)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        
+        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+        text1.show_text() # method to show the text
+        text2.show_text()
+        pygame.display.update()
+
+        keys=pygame.key.get_pressed()
+
+        if keys[pygame.K_2]:
+            select.play()
+            twoplayer = True
+            playerlist.append(player2)
+            instructionloop(twoplayer)
+            second_menu = False
+        
+        if keys[pygame.K_1]:
+            select.play()
+            twoplayer = False
+            instructionloop(twoplayer)
+            second_menu = False
+        
+        if keys[pygame.K_ESCAPE]:
+            run = False
+            second_menu = False
+        
+        text1ctrl = True
+
+
+        while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
+            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
+            title.draw(window)
+            text1.show_text()
+            text2.show_text()
+            pygame.display.update() # updates the display
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
+                    select.play()
+                    twoplayer = False
+                    instructionloop(twoplayer)
+                    second_menu = False
+                    text1ctrl = False
+        
+        text2ctrl = True            
+        while text2.mouse_over() and text2ctrl:
+            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
+            title.draw(window)
+            text1.show_text()
+            text2.show_text()
+            pygame.display.update()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
+                    select.play()
+                    twoplayer = True
+                    playerlist.append(player2)
+                    instructionloop(twoplayer)
+                    second_menu = False
+                    text2ctrl = False
+
+def instructionloop(twoplayer):
+    trigger = True
+    global run
+    while trigger:
+        clock.tick(27)
+        title.draw(window)
+        if twoplayer:
+            window.blit(info2, (0,0))
+        else:
+            window.blit(info1, (0,0))
+        pygame.display.update()            
+
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                run = False
+                trigger = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    select.play()
                     trigger = False
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        select.play()
-                        trigger = False
-    
-    def pauseMenu():
-        pause = True
-        global run
-        while pause:
-            clock.tick(27)
-            
-            #leave game
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                    pause = False
-            
-            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)
-            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
+def pauseMenu():
+    pause = True
+    global run
+    while pause:
+        clock.tick(27)
+        
+        #leave game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pause = False
+        
+        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)
+        retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
+        contmsg.show_text()
+        retrymsg.show_text()
+        pygame.display.flip()
+        
+        contctrl = True
+        while contmsg.mouse_over() and contctrl:
+            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
             contmsg.show_text()
             retrymsg.show_text()
             pygame.display.flip()
-            
-            contctrl = True
-            while contmsg.mouse_over() and contctrl:
-                contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
-                contmsg.show_text()
-                retrymsg.show_text()
-                pygame.display.flip()
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        select.play()
-                        pause = False
-                        contctrl = False
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    select.play()
+                    pause = False
+                    contctrl = False
 
-            retryctrl = True            
-            while retrymsg.mouse_over() and retryctrl:
-                retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
-                retrymsg.show_text()
-                contmsg.show_text()
-                pygame.display.flip()
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        select.play()
-                        reset()
-                        pause = False
-                        retryctrl = False
-            
-            pkeys = pygame.key.get_pressed()
-            if pkeys[pygame.K_c]:
-                select.play()
-                pause = False
+        retryctrl = True            
+        while retrymsg.mouse_over() and retryctrl:
+            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
+            retrymsg.show_text()
+            contmsg.show_text()
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    select.play()
+                    reset()
+                    pause = False
+                    retryctrl = False
+        
+        pkeys = pygame.key.get_pressed()
+        if pkeys[pygame.K_c]:
+            select.play()
+            pause = False
 
-            if pkeys[pygame.K_r]:
-                select.play()
-                reset()
-                pause = False
+        if pkeys[pygame.K_r]:
+            select.play()
+            reset()
+            pause = False
 
-            pygame.display.update()
+        pygame.display.update()
 
-    def endScreen():
-        global menu
-        global run
-        global endcredits
-        pygame.mixer.music.load('gameover.mp3')
-        pygame.mixer.music.play(-1,0.0)
-    
-        endrun = True
-        while endrun:
-            clock.tick(27)
+def endScreen():
+    global menu
+    global run
+    global endcredits
+    pygame.mixer.music.load('gameover.mp3')
+    pygame.mixer.music.play(-1,0.0)
 
-            title.draw(window)
-            gomsg = bigfont.render("Game Over", 1, (255,201,14))
-            window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
-            goprompt = vsmallfont.render (\
+    endrun = True
+    while endrun:
+        clock.tick(27)
+
+        title.draw(window)
+        gomsg = bigfont.render("Game Over", 1, (255,201,14))
+        window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
+        goprompt = vsmallfont.render (\
 "Restart [R]                           High Score[H]                           Main Menu[E]                           Exit[ESC]",\
-            1,(255,201,14))
-            window.blit (goprompt, (winwidth//2-goprompt.get_width()//2,350))
-            
-            
-            keys = pygame.key.get_pressed()
+        1,(255,201,14))
+        window.blit (goprompt, (winwidth//2-goprompt.get_width()//2,350))
+        
+        
+        keys = pygame.key.get_pressed()
 
-            if winner != 0:
-                winnername = smallfont.render("Winner:  "+winner.name, 1, (fontcolour))
-                winner.move = True
-                winner.left = False
-                winner.x = winwidth/2 -winner.width/2
-                winner.y = winheight/2
-                winner.draw(window)
-                window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
+        if winner != 0:
+            winnername = smallfont.render("Winner:  "+winner.name, 1, (fontcolour))
+            winner.move = True
+            winner.left = False
+            winner.x = winwidth/2 -winner.width/2
+            winner.y = winheight/2
+            winner.draw(window)
+            window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
+        else:
+            if not twoplayer:
+                newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,255,255))
+                window.blit(newscore, (winwidth//2-newscore.get_width()//2,250))
             else:
-                if not twoplayer:
-                    newscore = smallfont.render("Your Score:  "+str(myscore).zfill(4), 1, (255,255,255))
-                    window.blit(newscore, (winwidth//2-newscore.get_width()//2,250))
-                else:
-                    winnername = smallfont.render("Did you do that on purpose?", 1, (fontcolour))
-                    window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
-            
-            
-            if keys[pygame.K_r]:
-                select.play()
-                reset()
-                endrun = False
+                winnername = smallfont.render("Did you do that on purpose?", 1, (fontcolour))
+                window.blit(winnername, (winwidth//2-winnername.get_width()//2,300))
+        
+        
+        if keys[pygame.K_r]:
+            select.play()
+            reset()
+            endrun = False
 
-            if keys[pygame.K_e]:
-                select.play()
-                reset()
-                if len(playerlist)>1:
-                    playerlist.pop()
-                menu = True
-                endrun = False
+        if keys[pygame.K_e]:
+            select.play()
+            reset()
+            if len(playerlist)>1:
+                playerlist.pop()
+            menu = True
+            endrun = False
 
-            if keys[pygame.K_h]:
-                pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
-                linecount = 0
-                window.blit(smallfont.render("High Scores:", 1, (0,0,0)), (290,100))
-                for score in highscore.scoreList:
-                    linecount += 1
-                    window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (290,100+linecount*40))
-
-            if keys[pygame.K_ESCAPE]:
-                start.play()
-                run = False
-                endrun = False
-                endcredits = True
-            
-            pygame.display.update()
-
-            #leave game 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    endrun = False 
-                    run = False
-    
-    def creditScene():
-        global run
-        global endcredits
-        endcount = 0
-        while endcredits and endcount <300:
-            
-            credit = ["Moon Run","","Game and visuals:","",\
-                "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
-                "Mohammad Yazdani","","Music:","",\
-                "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems", \
-                "Available for free at    http://EricSkiff.com/music","",\
-                "Sounds:      BitKits free VST","", "2019"]
-            title.draw(window)
+        if keys[pygame.K_h]:
+            pygame.draw.rect(window,(fontcolour),(winwidth/2-200,0,400,400))
             linecount = 0
-            for line in credit:
-                linecount += 20
-                i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
-                i.show_text()
+            window.blit(smallfont.render("High Scores:", 1, (0,0,0)), (290,100))
+            for score in highscore.scoreList:
+                linecount += 1
+                window.blit(smallfont.render(str(linecount)+" . . . . . . . "+str(score).zfill(6), 1, (0,0,0)), (290,100+linecount*40))
 
-            pygame.display.update() 
-            endcount += 1
+        if keys[pygame.K_ESCAPE]:
+            start.play()
+            run = False
+            endrun = False
+            endcredits = True
+        
+        pygame.display.update()
 
-            for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        endcredits = False
-                        run = False
+        #leave game 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                endrun = False 
+                run = False
+
+def creditScene():
+    global run
+    global endcredits
+    endcount = 0
+    while endcredits and endcount <300:
+        
+        credit = ["Moon Run","","Game and visuals:","",\
+            "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
+            "Mohammad Yazdani","","Music:","",\
+            "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems", \
+            "Available for free at    http://EricSkiff.com/music","",\
+            "Sounds:      BitKits free VST","", "2019"]
+        title.draw(window)
+        linecount = 0
+        for line in credit:
+            linecount += 20
+            i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
+            i.show_text()
+
+        pygame.display.update() 
+        endcount += 1
+
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    endcredits = False
+                    run = False
 
 
 def redrawGameWindow():
@@ -754,7 +752,6 @@ firstrun = True
 
 
 
-
 #loads highscores from file
 try:
     file = open("highscore.hs","rb")
@@ -765,19 +762,22 @@ except FileNotFoundError:
 except EOFError:
     highscore = scoreboard([0,0,0,0,0])
 
+
+
 #main game loop
 run = True
 while run:
     clock.tick(27)
+    keys = pygame.key.get_pressed()
 
     #leave game 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
-    gameMenu.introPlay()
-    gameMenu.startScreen()
-    gameMenu.playerSelect()
+    introPlay()
+    startScreen()
+    playerSelect()
 
     #randomly generate and move holes, meteors and items
     createAndMove('h',holelist,1,50)
@@ -803,7 +803,6 @@ while run:
             meteo.img='meteoriteb.png'
     
     #player control
-    keys = pygame.key.get_pressed()
     player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
     if twoplayer:
         player2.moving(keys[pygame.K_a],keys[pygame.K_d],keys[pygame.K_w])
@@ -811,7 +810,7 @@ while run:
     #pause game
     if keys[pygame.K_p]:
         select.play()
-        gameMenu.pauseMenu()
+        pauseMenu()
 
     #speed up
     speedcount += 1
@@ -857,10 +856,10 @@ while run:
         pygame.display.update()
 
     if end:
-        gameMenu.endScreen()
+        endScreen()
     
     if endcredits:
-        gameMenu.creditScene()
+        creditScene()
     
 
 #write the highscores into a file
