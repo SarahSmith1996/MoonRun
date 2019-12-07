@@ -2,6 +2,8 @@
 -------------------------- MOON RUN -------------------------------
 
 
+Created by: Remigius Ezeabasili, Jonas Kohl, Sarah Smith, Mohammad Yazdani
+Music by: Eric Skiff
 
 """
 
@@ -100,8 +102,9 @@ class player (object):
         self.floorpos = pFloorpos
         self.col = False
 
-        self.maxvel = 2.5*worldvel
-        self.maxjumpheight = 20
+        self.speedboost = 0
+        self.maxspeedboost = 6
+        self.maxjumpheight = 16
 
 
     def moving(self, leftB, rightB, jumpB):
@@ -196,16 +199,16 @@ class player (object):
 
         #item
         for item in itemlist:
-            if self.x > item.x and self.x < item.x + item.width:
+            if  item.x < self.x + self.width//2 < item.x + item.width:
                 if self.y+self.height >= item.y:
 
                     if item.img == "item1.png":
-                        self.vel += 2
-                        print ("Speed up!")
+                        if self.speedboost < self.maxspeedboost:
+                            self.speedboost += 2
+
                     else:
                         if self.jumpheight < self.maxjumpheight:
                             self.jumpheight += 2
-                            print("Jetpack boost!")
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))   
 
@@ -758,6 +761,7 @@ def reset():
         player.ontop = False
         player.leftof = False
         player.rightof = False
+        player.speedboost = 0
         player.jumpheight = 10
         player.jumpCount = player.jumpheight
         player.neg = 1
@@ -837,7 +841,7 @@ while run:
     #randomly generate and move holes, meteors and items
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,1,100)
-    createAndMove('i',itemlist,1,200)
+    createAndMove('i',itemlist,1,300)
     
     # lunar module regularly apperars
     if lunar.x > -6*winwidth:
@@ -861,8 +865,8 @@ while run:
     if speedcount % 500 == 0:
         worldvel *= 1.5
         speed.play()
-    player1.vel = worldvel+2
-    player2.vel = worldvel+2
+    player1.vel = worldvel+2 + player1.speedboost
+    player2.vel = worldvel+2 + player2.speedboost
     bd1.vel = worldvel/8
 
     #game over conditions
