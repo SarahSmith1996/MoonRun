@@ -2,24 +2,6 @@
 -------------------------- MOON RUN -------------------------------
 
 
-NOTES:
-
-    IDEAS:
-    - Enter Name
-    - add shooting star
-    - spikey objects/aliens that kill on contact
-
-
-    OPTIMIZE CODE:
-    - OOP optimization 
-        - class variables change self to classname?
-        - 'stuff' subclass of elements (draw function in element class)?
-    - make reset function the general initializer of all game variables -> reset at the start of game (within menu)
-    - remove hardcoding
-    - sort code: global variables, databases, functions
-    - sounds drown each other out
-    - change hole sprite, so meteorites look better on top
-
 
 """
 
@@ -37,10 +19,10 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 #general game values
-worldvel = 8
-maxscore = 999999
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()
+worldvel = 8
+maxscore = 999999
 
 
 #window
@@ -216,7 +198,7 @@ class player (object):
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))
                     
-     # interaction with meteor
+        # interaction with meteor
         for meteo in meteolist:
             if meteo.img=='meteoriteb.png':
                 if meteo.x < self.x + self.width < meteo.x + meteo.width and self.y + self.height > meteo.y: 
@@ -239,6 +221,20 @@ class player (object):
         self.col = False
         self.ontop = False
 
+          
+        #player death
+        for hole in holelist:
+            if self.x > hole.x + 5 and self.x < hole.x+hole.width-self.width and self.y >= winheight-91:
+                if self.alive:
+                    death.play()
+                self.alive = False
+                self.y += 15
+
+        if self.x <= -50 and self.alive:
+            self.isJump = False #so that jetpack doesn't drown out death sound
+            death.play()
+            self.alive = False
+            self.y += 2000
 
 class element (object):
 
@@ -318,332 +314,172 @@ class scoreboard (object):
             self.scoreList[i] = 0
 
 
-def redrawGameWindow():
-    window.blit(night,(0,0)) #draws background (starry night)
-    bd1.draw(window)
-    #bd2.draw(window)
-    lunar.draw(window)
-    pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
-    for holes in holelist:
-        holes.draw(window)
-    for meteo in meteolist:
-        meteo.draw(window)
-    for item in itemlist:
-        if item.img=="item1.png":
-            otherimg = "item12.png"
-        else:
-            otherimg = "item22.png"
-        item.draw(window,otherimg)
-    for player in playerlist:
-        player.draw(window)
-
-def createAndMove(typ,lst,listLimit,randLimit):
-    for obj in lst:
-        if obj.x <= -obj.width:
-            lst.pop(lst.index(obj))
-
-    #make random objects
-    objget=random.randint(0,randLimit)
-    if objget == 0 and len(lst)<listLimit:
-        if typ == "h":
-            x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
-        elif typ == "m":
-            x = displayObject(winwidth,0,worldvel,'meteorite.png',64,64)
-            fall.play()
-        elif typ == "i":
-            if pygame.time.get_ticks()%2 == 0:
-                x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
-            else:
-                x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
-        #add to objectlist
-        lst += [x]
-    #move objects at their velocity
-    for obj in lst:
-        obj.x -= worldvel
-
-def instructionloop(twoplayer):
-    trigger = True
+class gameMenu ():
     
-    while trigger:
-        clock.tick(27)
-        title.draw(window)
-        if twoplayer:
-            window.blit(info2, (0,0))
-        else:
-            window.blit(info1, (0,0))
-        pygame.display.update()            
+    def introPlay():
+        incount = 0
+        global intro
+        global run
+        while intro:
+            clock.tick(27)
+            incount += 1
+            window.blit(gameintro, (0,0))
 
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                global run
-                run = False
-                trigger = False
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    select.play()
-                    trigger = False
-        
-
-def reset():
-    global worldvel
-    global holelist
-    global meteolist
-    global gameovercount
-    global winner
-    global playtime
-    global end
-    global replay
-    global playerlist
-    global itemlist
-    global highget
-    global speedcount
-    
-    worldvel = 8
-    holelist=[]
-    meteolist=[]
-    itemlist=[]
-    gameovercount=0
-    winner=0
-    playtime=0
-    speedcount = 0
-    highget = True
-    end = False
-    replay = False
-    for player in playerlist:
-        player.alive = True
-        player.y = winheight-player.height-16
-        player.isJump = False
-        player.jumpCount = 10
-        player.neg = 1
-        player.vel = (5/4)*worldvel
-
-    player1.x = winwidth//2
-
-    if twoplayer:
-        player2.x = winwidth*(2/3)
-    pygame.mixer.music.load('music.mp3')
-    pygame.mixer.music.play(-1,0.0)
-
-
-#class instances
-title = backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
-#bd2 = backdrop(0,0,worldvel/4,'hills_fg.png',800,400)
-
-lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
-
-player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
-
-#loads highscores from file
-try:
-    file = open("highscore.hs","rb")
-    highscore = pickle.load(file)
-    file.close()
-except FileNotFoundError:
-    highscore = scoreboard([0,0,0,0,0])
-except EOFError:
-    highscore = scoreboard([0,0,0,0,0])
-
-
-#start conditions
-itemlist=[]
-holelist=[]
-meteolist=[]
-allobjlist = [itemlist,holelist,meteolist]
-playerlist = [player1]
-gameovercount = 0
-winner = 0
-playtime = 0
-speedcount = 0
-intro = True
-end = False
-replay = False
-menu = True
-endcredits = False
-second_menu = False
-twoplayer = False
-highget = True
-firstrun = True
-
-#music for main game
-
-
-#main game loop
-run = True
-while run:
-    incount = 0
-    while intro:
-        clock.tick(27)
-        incount += 1
-        window.blit(gameintro, (0,0))
-
-        mask = pygame.Surface((winwidth, winheight))
-        mask = mask.convert()
-        mask.fill(black)
-        mask.set_alpha(255-10*incount)
-        window.blit(mask, (0, 0))
-        if incount == 20:
-            introsound.play()
-            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
-            presents.show_text()
-        pygame.display.update()
-        if incount >= 60:
-            intro = False
-            pygame.mixer.music.load('music.mp3')
-            pygame.mixer.music.play(-1,0.0)
-
-        #leave game
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            mask = pygame.Surface((winwidth, winheight))
+            mask = mask.convert()
+            mask.fill(black)
+            mask.set_alpha(255-10*incount)
+            window.blit(mask, (0, 0))
+            if incount == 20:
+                introsound.play()
+                presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
+                presents.show_text()
+            pygame.display.update()
+            if incount >= 60:
                 intro = False
-                run = False
+                pygame.mixer.music.load('music.mp3')
+                pygame.mixer.music.play(-1,0.0)
+            #leave game
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    intro = False
+                    run = False
+    
 
-    clock.tick(27)
+    def startScreen():
+        #game menu
+        global menu
+        global second_menu
+        global run
+        while menu:
+            clock.tick(27)
 
-    #leave game 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-
+            #leave game 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    menu = False
             
-    #game menu
-    while menu:
-        clock.tick(27)
-
-        #leave game 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                menu = False
-        
-                
-        title.draw(window)
-        
-        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
-        text.show_text()
-        
-        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
-        text2.show_text()
-
-        pygame.display.flip()
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            menu = False
-            second_menu = True
-        
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                run = False
-            else:
-                start.play()
-                second_menu = True
-            menu = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    start.play()
+                    menu = False
+                    second_menu = True
             
-    while second_menu: # second menu loop
-        
-        title.draw(window)
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-        
-        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
-        text1.show_text() # method to show the text
-        text2.show_text()
-        pygame.display.update()
-
-        keys=pygame.key.get_pressed()
-
-        if keys[pygame.K_2]:
-            select.play()
-            twoplayer = True
-            playerlist.append(player2)
-            instructionloop(twoplayer)
-            second_menu = False
-        
-        if keys[pygame.K_1]:
-            select.play()
-            twoplayer = False
-            instructionloop(twoplayer)
-            second_menu = False
-        
-        if keys[pygame.K_ESCAPE]:
-            run = False
-            second_menu = False
-        
-        text1ctrl = True
-
-
-        while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
-            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+                    else:
+                        start.play()
+                        second_menu = True
+                        menu = False
             title.draw(window)
-            text1.show_text()
+            
+            text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
+            text.show_text()
+            
+            text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, fontcolour)
             text2.show_text()
-            pygame.display.update() # updates the display
+
+            pygame.display.update()
+    
+    def playerSelect():
+        global run
+        global second_menu
+        global twoplayer
+        while second_menu: # second menu loop
+            
+            title.draw(window)
             
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
-                    select.play()
-                    twoplayer = False
-                    instructionloop(twoplayer)
-                    second_menu = False
-                    text1ctrl = False
-        
-        text2ctrl = True            
-        while text2.mouse_over() and text2ctrl:
-            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
-            title.draw(window)
-            text1.show_text()
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+            
+            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
+            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+            text1.show_text() # method to show the text
             text2.show_text()
             pygame.display.update()
-            
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
-                    select.play()
-                    twoplayer = True
-                    playerlist.append(player2)
-                    instructionloop(twoplayer)
-                    second_menu = False
-                    text2ctrl = False
-        
-    
-    # lunar module regularly apperars
-    if lunar.x > -6*winwidth:
-        lunar.x -= worldvel
-    else: 
-        lunar.x = winwidth
-    
-    #randomly generate and move holes, meteors and items
-    createAndMove('h',holelist,1,50)
-    createAndMove('m',meteolist,3,100)
-    createAndMove('i',itemlist,1,200)
-        
-    #meteorite animation    
-    for meteo in meteolist:
-        if meteo.y == winheight - 80 - 32:
-            crash.play()
-        if meteo.y < winheight - 80:
-            meteo.y += 32
-        else:
-            for hole in holelist:
-                if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
-                    meteo.y += 32
-            meteo.img='meteoriteb.png'
-    
-    #player control
-    keys = pygame.key.get_pressed()
-    player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
-    if twoplayer:
-        player2.moving(keys[pygame.K_a],keys[pygame.K_d],keys[pygame.K_w])
 
-    #pause game
-    if keys[pygame.K_p]:
-        select.play()
+            keys=pygame.key.get_pressed()
+
+            if keys[pygame.K_2]:
+                select.play()
+                twoplayer = True
+                playerlist.append(player2)
+                gameMenu.instructionloop(twoplayer)
+                second_menu = False
+            
+            if keys[pygame.K_1]:
+                select.play()
+                twoplayer = False
+                gameMenu.instructionloop(twoplayer)
+                second_menu = False
+            
+            if keys[pygame.K_ESCAPE]:
+                run = False
+                second_menu = False
+            
+            text1ctrl = True
+
+
+            while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
+                text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
+                title.draw(window)
+                text1.show_text()
+                text2.show_text()
+                pygame.display.update() # updates the display
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN: # if the mouse is clicked while on the text
+                        select.play()
+                        twoplayer = False
+                        gameMenu.instructionloop(twoplayer)
+                        second_menu = False
+                        text1ctrl = False
+            
+            text2ctrl = True            
+            while text2.mouse_over() and text2ctrl:
+                text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
+                title.draw(window)
+                text1.show_text()
+                text2.show_text()
+                pygame.display.update()
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
+                        select.play()
+                        twoplayer = True
+                        playerlist.append(player2)
+                        gameMenu.instructionloop(twoplayer)
+                        second_menu = False
+                        text2ctrl = False
+
+    def instructionloop(twoplayer):
+        trigger = True
+        global run
+        while trigger:
+            clock.tick(27)
+            title.draw(window)
+            if twoplayer:
+                window.blit(info2, (0,0))
+            else:
+                window.blit(info1, (0,0))
+            pygame.display.update()            
+
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    run = False
+                    trigger = False
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        select.play()
+                        trigger = False
+    
+    def pauseMenu():
         pause = True
+        global run
         while pause:
             clock.tick(27)
             
@@ -690,73 +526,16 @@ while run:
                 pause = False
 
             if pkeys[pygame.K_r]:
+                select.play()
                 reset()
                 pause = False
 
             pygame.display.update()
-            continue
 
-    #player death
-    for player in playerlist:
-        for hole in holelist:
-            if player.x > hole.x + 5 and player.x < hole.x+hole.width-player.width and player.y >= winheight-91:
-                if player.alive:
-                    death.play()
-                player.alive = False
-                player.y += 15
-
-        if player.x <= -50 and player.alive:
-            player.isJump = False #so that jetpack doesn't drown out death sound
-            death.play()
-            player.alive = False
-            player.y += 2000
-
-    #speed up
-    speedcount += 1
-    if speedcount % 500 == 0:
-        worldvel *= 1.5
-        speed.play()
-    player1.vel = worldvel+2
-    player2.vel = worldvel+2
-    bd1.vel = worldvel/8
-    #bd2.vel = worldvel/4
-
-    #game over 
-    
-    if gameovercount > 20:
-        end = True
-    
-    if not twoplayer:
-        if not player1.alive:
-            myscore = playtime
-            gameovercount += 1
-            if highget:
-                highscore.addscore(myscore)
-                highget = False
-        if player1.alive:
-            playtime += 1 
-
-        if run:
-            timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
-            window.blit(timer, (winwidth-timer.get_width()-20,20))
-            pygame.display.update()
-
-    else:
-        if not player1.alive:
-            if player2.alive:
-                winner = player2
-            gameovercount += 1
-        if not player2.alive:
-            if player1.alive:
-                winner = player1
-                gameovercount += 1
-    
-    #refresh screen#
-    if not menu and not second_menu and run:
-        redrawGameWindow()
-        pygame.display.update()
-
-    if end:
+    def endScreen():
+        global menu
+        global run
+        global endcredits
         pygame.mixer.music.load('gameover.mp3')
         pygame.mixer.music.play(-1,0.0)
     
@@ -767,7 +546,9 @@ while run:
             title.draw(window)
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
             window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
-            goprompt = vsmallfont.render ("Restart [R]                           High Score[H]                           Main Menu[E]                           Exit[ESC]", 1,(255,201,14))
+            goprompt = vsmallfont.render (\
+"Restart [R]                           High Score[H]                           Main Menu[E]                           Exit[ESC]",\
+            1,(255,201,14))
             window.blit (goprompt, (winwidth//2-goprompt.get_width()//2,350))
             
             
@@ -824,33 +605,265 @@ while run:
                 if event.type == pygame.QUIT:
                     endrun = False 
                     run = False
+    
+    def creditScene():
+        global run
+        global endcredits
+        endcount = 0
+        while endcredits and endcount <300:
+            
+            credit = ["Moon Run","","Game and visuals:","",\
+                "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
+                "Mohammad Yazdani","","Music:","",\
+                "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems", \
+                "Available for free at    http://EricSkiff.com/music","",\
+                "Sounds:      BitKits free VST","", "2019"]
+            title.draw(window)
+            linecount = 0
+            for line in credit:
+                linecount += 20
+                i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
+                i.show_text()
 
-    endcount = 0
-    while endcredits and endcount <300:
+            pygame.display.update() 
+            endcount += 1
+
+            for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        endcredits = False
+                        run = False
+
+
+def redrawGameWindow():
+    window.blit(night,(0,0)) #draws background (starry night)
+    bd1.draw(window)
+    lunar.draw(window)
+    pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
+    for holes in holelist:
+        holes.draw(window)
+    for meteo in meteolist:
+        meteo.draw(window)
+    for item in itemlist:
+        if item.img=="item1.png":
+            otherimg = "item12.png"
+        else:
+            otherimg = "item22.png"
+        item.draw(window,otherimg)
+    for player in playerlist:
+        player.draw(window)
+
+def createAndMove(typ,lst,listLimit,randLimit):
+    for obj in lst:
+        if obj.x <= -obj.width:
+            lst.pop(lst.index(obj))
+
+    #make random objects
+    objget=random.randint(0,randLimit)
+    if objget == 0 and len(lst)<listLimit:
+        if typ == "h":
+            x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
+        elif typ == "m":
+            x = displayObject(winwidth,0,worldvel,'meteorite.png',64,64)
+            fall.play()
+        elif typ == "i":
+            if pygame.time.get_ticks()%2 == 0:
+                x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
+            else:
+                x = Item(winwidth,winheight-60,worldvel,'item2.png',32,32)
+        #add to objectlist
+        lst += [x]
+    #move objects at their velocity
+    for obj in lst:
+        obj.x -= worldvel
+
+
+def reset():
+    global worldvel
+    global holelist
+    global meteolist
+    global gameovercount
+    global winner
+    global playtime
+    global end
+    global replay
+    global playerlist
+    global itemlist
+    global highget
+    global speedcount
+    
+    worldvel = 8
+    holelist=[]
+    meteolist=[]
+    itemlist=[]
+    gameovercount=0
+    winner=0
+    playtime=0
+    speedcount = 0
+    highget = True
+    end = False
+    replay = False
+    for player in playerlist:
+        player.alive = True
+        player.y = winheight-player.height-16
+        player.isJump = False
+        player.jumpCount = 10
+        player.neg = 1
+        player.vel = (5/4)*worldvel
+
+    player1.x = winwidth//2
+
+    if twoplayer:
+        player2.x = winwidth*(2/3)
+    
+    pygame.mixer.music.load('music.mp3')
+    pygame.mixer.music.play(-1,0.0)
+
+
+#class instances
+title = backdrop(0,0,worldvel/2,'starry.png',800,400)
+bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
+
+player1 = player(winwidth//2,winheight-85,71,71, p1move, p1stand, p1jump, 'Player 1')
+player2 = player(winwidth*(2/3),winheight-85,71,71, p2move, p2stand, p2jump, 'Player 2')
+
+
+
+#start conditions
+
+
+
+itemlist=[]
+holelist=[]
+meteolist=[]
+allobjlist = [itemlist,holelist,meteolist]
+playerlist = [player1]
+gameovercount = 0
+winner = 0
+playtime = 0
+speedcount = 0
+intro = True
+end = False
+replay = False
+menu = True
+endcredits = False
+second_menu = False
+twoplayer = False
+highget = True
+firstrun = True
+
+
+
+
+#loads highscores from file
+try:
+    file = open("highscore.hs","rb")
+    highscore = pickle.load(file)
+    file.close()
+except FileNotFoundError:
+    highscore = scoreboard([0,0,0,0,0])
+except EOFError:
+    highscore = scoreboard([0,0,0,0,0])
+
+#main game loop
+run = True
+while run:
+    clock.tick(27)
+
+    #leave game 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+    gameMenu.introPlay()
+    gameMenu.startScreen()
+    gameMenu.playerSelect()
+
+    #randomly generate and move holes, meteors and items
+    createAndMove('h',holelist,1,50)
+    createAndMove('m',meteolist,3,100)
+    createAndMove('i',itemlist,1,200)
+    
+    # lunar module regularly apperars
+    if lunar.x > -6*winwidth:
+        lunar.x -= worldvel
+    else: 
+        lunar.x = winwidth
         
-        credit = ["Moon Run","","Game and visuals:","",\
-            "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
-            "Mohammad Yazdani","","Music:","",\
-            "Eric Skiff - HHavok-intro / Ascending - Resistor Anthems", \
-            "Available for free at    http://EricSkiff.com/music","",\
-            "Sounds:      BitKits free VST","", "2019"]
-        title.draw(window)
-        linecount = 0
-        for line in credit:
-            linecount += 20
-            i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
-            i.show_text()
+    #meteorite animation    
+    for meteo in meteolist:
+        if meteo.y == winheight - 80 - 32:
+            crash.play()
+        if meteo.y < winheight - 80:
+            meteo.y += 32
+        else:
+            for hole in holelist:
+                if meteo.x > hole.x and meteo.x < hole.x+hole.width-meteo.width:
+                    meteo.y += 32
+            meteo.img='meteoriteb.png'
+    
+    #player control
+    keys = pygame.key.get_pressed()
+    player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
+    if twoplayer:
+        player2.moving(keys[pygame.K_a],keys[pygame.K_d],keys[pygame.K_w])
 
-        pygame.display.update() 
-        endcount += 1
+    #pause game
+    if keys[pygame.K_p]:
+        select.play()
+        gameMenu.pauseMenu()
 
-        for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    endcredits = False
-                    run = False
+    #speed up
+    speedcount += 1
+    if speedcount % 500 == 0:
+        worldvel *= 1.5
+        speed.play()
+    player1.vel = worldvel+2
+    player2.vel = worldvel+2
+    bd1.vel = worldvel/8
 
+    #game over conditions
+    if gameovercount > 20:
+        end = True
+    
+    if not twoplayer:
+        if not player1.alive:
+            myscore = playtime
+            gameovercount += 1
+            if highget:
+                highscore.addscore(myscore)
+                highget = False
+        if player1.alive:
+            playtime += 1 
 
+        if run:
+            timer = smallfont.render(str(playtime).zfill(4), 1, (255,201,14))
+            window.blit(timer, (winwidth-timer.get_width()-20,20))
+            pygame.display.update()
 
+    else:
+        if not player1.alive:
+            if player2.alive:
+                winner = player2
+            gameovercount += 1
+        if not player2.alive:
+            if player1.alive:
+                winner = player1
+                gameovercount += 1
+    
+    #refresh screen
+    if not menu and not second_menu and run:
+        redrawGameWindow()
+        pygame.display.update()
+
+    if end:
+        gameMenu.endScreen()
+    
+    if endcredits:
+        gameMenu.creditScene()
+    
+
+#write the highscores into a file
 file = open("highscore.hs","wb")
 pickle.dump(highscore,file)
 file.close()
