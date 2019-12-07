@@ -607,8 +607,9 @@ while run:
             clock.tick(27)
 
             title.draw(window)
-            gomsg = bigfont.render("Game Over", 1, (255,201,14))
-            window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
+            gomsg = Display.Text(winwidth//2, 100, "Game Over", font, 55, (255,201,14))
+            gomsg.showtext()
+            
             
             # Options menu after Game Over screen.
             goprompt = Display.Text(winwidth//2, 350, "Restart [R]                           High Score[H]\\
