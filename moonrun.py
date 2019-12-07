@@ -115,11 +115,11 @@ class player (object):
 
         self.leftof = False
         self.rightof = False
-        self.ontopof = False
+        self.ontop = False
+        self.floorpos = 315
         self.col = False
 
         #delete if not needed
-        self.ontop = True
         self.maxvel = 2.5*worldvel
         
         self.maxjumpheight = 13
@@ -157,19 +157,36 @@ class player (object):
                 self.jump()
     
     def jump (self):
-        if self.jumpCount >= -self.jumpheight:
-            self.neg = 1
-            if self.jumpCount < 0:
-                self.neg = -1
-            self.y -= (self.jumpCount **2) * 0.25 * self.neg
-            self.jumpCount -= 0.5
-            if self.neg == 1 and self.x>0: 
-                jetpack.play()
 
+        if self.jumpCount > 0:
+            self.y -= 19
+            self.jumpCount -= 0.5
+            jetpack.play()
+        
         else:
             self.isJump = False
             self.jumpCount = self.jumpheight
 
+        """
+            self.neg = 1
+            if self.jumpCount < 0:
+                self.neg = -1
+            if self.y - (self.jumpCount **2) * 0.25 * self.neg <= self.floorpos:
+                self.y -= (self.jumpCount **2) * 0.25 * self.neg
+            else:
+                self.y = self.floorpos
+                self.isJump = False
+                
+            
+            if self.neg == 1 and self.x>0: 
+                
+        else:
+            self.y = self.floorpos
+            self.isJump = False
+            self.jumpCount = self.jumpheight
+            
+        print(self.floorpos)
+        """
     def draw(self, window):
         if self.move:
             if self.step + 1 > 16:
@@ -215,7 +232,7 @@ class player (object):
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))
                     
-     # for when you get stuck at a meteor 
+     # interaction with meteor
         for meteo in meteolist:
             if meteo.img=='meteoriteb.png':
                 if meteo.x < self.x + self.width < meteo.x + meteo.width and self.y + self.height > meteo.y: 
@@ -224,15 +241,19 @@ class player (object):
                 elif meteo.x < self.x < meteo.x + meteo.width and self.y + self.height > meteo.y: 
                     self.rightof = True
                     self.col = True
-                elif meteo.x < self.x < meteo.x+meteo.width:  
-                    if meteo.y-meteo.height < self.y+self.height < meteo.y:
-                        self.ontop = True
-                        self.col = True
+
+                if meteo.x <= self.x+self.width <= meteo.x+meteo.width:
+                    self.ontop = True
+                    self.floorpos = 245  
+                    
+
         if not self.col:
             self.leftof = False
             self.rightof = False
-            self.ontop = False
+        if not self.ontop:
+            self.floorpos = 309
         self.col = False
+        self.ontop = False
 
 
 class element (object):
@@ -606,6 +627,10 @@ while run:
     #default movement
     for player in playerlist:
         player.x -= worldvel
+        if player.y < player.floorpos:
+            player.y += 14
+        else:
+            player.y = player.floorpos
         player.collision()
     
     # lunar module regularly apperars
