@@ -610,11 +610,11 @@ while run:
             gomsg = bigfont.render("Game Over", 1, (255,201,14))
             window.blit(gomsg, (winwidth//2-gomsg.get_width()//2,100))
             
-            # WHAT IS X AND Y HERE? WINWIDTH/WINHEIGHT??
-            goprompt = Display.Text(winwidth//2, "Restart [R]                           High Score[H]\\
+            # Options menu after Game Over screen.
+            goprompt = Display.Text(winwidth//2, 350, "Restart [R]                           High Score[H]\\
                                            Main Menu[E]                           Exit[ESC]", font, 15, (255,201,14))
             goprompt.show_text()
-            window.blit (goprompt, (winwidth//2-goprompt.get_width()//2,350))
+           
             
             
             keys = pygame.key.get_pressed()
