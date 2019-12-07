@@ -105,7 +105,7 @@ class player (object):
 
         self.vel = worldvel+2
         self.isJump = False
-        self.jumpheight = 10
+        self.jumpheight = 15
         self.jumpCount = self.jumpheight
         self.left = False
         self.step = 0
@@ -119,16 +119,25 @@ class player (object):
         self.floorpos = 315
         self.col = False
 
-        #delete if not needed
         self.maxvel = 2.5*worldvel
-        
-        self.maxjumpheight = 13
+        self.maxjumpheight = 20
 
 
-    
-    #delete self.left
     def moving(self, leftB, rightB, jumpB):
+
+        #default movement
+        self.x -= worldvel
+        self.collision()
+        if self.alive:
+            if self.y < self.floorpos:
+                self.y += 14
+            else:
+                if self.jumpCount < self.jumpheight:
+                    self.y = self.floorpos
+                    self.isJump = False
+                    self.jumpCount = self.jumpheight
         
+        #controls
         if self.alive:
             if leftB and not self.rightof:
                 self.left = True
@@ -162,31 +171,7 @@ class player (object):
             self.y -= 19
             self.jumpCount -= 0.5
             jetpack.play()
-        
-        else:
-            self.isJump = False
-            self.jumpCount = self.jumpheight
 
-        """
-            self.neg = 1
-            if self.jumpCount < 0:
-                self.neg = -1
-            if self.y - (self.jumpCount **2) * 0.25 * self.neg <= self.floorpos:
-                self.y -= (self.jumpCount **2) * 0.25 * self.neg
-            else:
-                self.y = self.floorpos
-                self.isJump = False
-                
-            
-            if self.neg == 1 and self.x>0: 
-                
-        else:
-            self.y = self.floorpos
-            self.isJump = False
-            self.jumpCount = self.jumpheight
-            
-        print(self.floorpos)
-        """
     def draw(self, window):
         if self.move:
             if self.step + 1 > 16:
@@ -196,7 +181,7 @@ class player (object):
             else:
                 window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))
             self.step += 1
-        elif self.isJump and self.neg == 1:
+        elif self.isJump and self.jumpCount > 0:
             if not self.left:
                 if pygame.time.get_ticks()%2 == 0:
                     window.blit(self.jumpimg[0], (self.x,self.y))
@@ -222,12 +207,11 @@ class player (object):
                 if self.y+self.height >= item.y:
 
                     if item.img == "item1.png":
-                        if self.vel < self.maxvel:
-                            self.vel += 4
-                            print ("Speed up!")
+                        self.vel += 2
+                        print ("Speed up!")
                     else:
                         if self.jumpheight < self.maxjumpheight:
-                            #self.jumpheight += 2    doesn't work, redo jump
+                            self.jumpheight += 2
                             print("Jetpack boost!")
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))
@@ -291,6 +275,30 @@ class Item (displayObject):
             window.blit(pygame.image.load(self.img),(self.x,self.y))
         else:
             window.blit(pygame.image.load(secimg),(self.x,self.y))
+
+class Text: #### creating the text class 
+    
+    def __init__(self, x, y, text, font, fontsize, colour):
+        self.x  = x
+        self.y = y
+        self.text = text
+        self.fontsize = fontsize
+        self.colour = colour
+        self.font = pygame.font.Font(font, self.fontsize) # creating the font
+        self.textsurf = self.font.render(self.text, True, self.colour) # creating the text surface
+        self.rect = self.textsurf.get_rect() # creating the rectangle for the text
+
+    
+    def show_text(self): # method to show the text
+        self.rect.center = (self.x,self.y) # Puts the center of the text at the x and y co ordinates
+        window.blit(self.textsurf,self.rect) # prints one surface onto another
+        
+    def mouse_over(self): # checks whether the mouse is over a the text
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            return True
+        else:
+            return False
+
 
 class scoreboard (object):
     LENGTH = 4
@@ -377,29 +385,6 @@ def instructionloop(twoplayer):
                     select.play()
                     trigger = False
         
-
-class Text: #### creating the text class 
-    
-    def __init__(self, x, y, text, font, fontsize, colour):
-        self.x  = x
-        self.y = y
-        self.text = text
-        self.fontsize = fontsize
-        self.colour = colour
-        self.font = pygame.font.Font(font, self.fontsize) # creating the font
-        self.textsurf = self.font.render(self.text, True, self.colour) # creating the text surface
-        self.rect = self.textsurf.get_rect() # creating the rectangle for the text
-
-    
-    def show_text(self): # method to show the text
-        self.rect.center = (self.x,self.y) # Puts the center of the text at the x and y co ordinates
-        window.blit(self.textsurf,self.rect) # prints one surface onto another
-        
-    def mouse_over(self): # checks whether the mouse is over a the text
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
-            return True
-        else:
-            return False
 
 def reset():
     global worldvel
@@ -591,6 +576,8 @@ while run:
             second_menu = False
         
         text1ctrl = True
+
+
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
             text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
             title.draw(window)
@@ -622,16 +609,7 @@ while run:
                     instructionloop(twoplayer)
                     second_menu = False
                     text2ctrl = False
-                    
-            
-    #default movement
-    for player in playerlist:
-        player.x -= worldvel
-        if player.y < player.floorpos:
-            player.y += 14
-        else:
-            player.y = player.floorpos
-        player.collision()
+        
     
     # lunar module regularly apperars
     if lunar.x > -6*winwidth:
