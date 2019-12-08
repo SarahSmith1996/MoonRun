@@ -949,7 +949,7 @@ while run:
         
         redrawGameWindow() 
         if not twoplayer:
-            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
+            timer = Text(winwidth//2, 40, str(playtime).zfill(4), font, 25, fontcolour)
             timer.show_text()
         pygame.display.update() 
 
