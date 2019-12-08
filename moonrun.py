@@ -1,9 +1,8 @@
 """
 -------------------------- MOON RUN -------------------------------
-
-
 Created by: Remigius Ezeabasili, Jonas Kohl, Sarah Smith, Mohammad Yazdani
 Music by: Eric Skiff
+
 
 """
 
@@ -900,7 +899,7 @@ while run:
             playtime += 1 
 
         if run:
-            timer = Text(winwidth-60, 20, str(playtime).zfill(4), font, 25, fontcolour)
+            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
             timer.show_text()
             pygame.display.update()
 
