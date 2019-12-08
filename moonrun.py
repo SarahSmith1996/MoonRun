@@ -36,7 +36,6 @@ pOntoppos = winheight-87-64
 #fonts
 font = 'pixel.otf' 
 
-
 #Colours
 fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
 white = pygame.Color('white')      
@@ -314,7 +313,7 @@ class Text: # creating the text class
         self.text = text
         self.fontsize = fontsize
         self.colour = colour
-        self.font = pygame.font.SysFont(font, self.fontsize) # creating the font
+        self.font = pygame.font.Font(font, self.fontsize) # creating the font
         self.textsurf = self.font.render(self.text, True, self.colour) # creating the text surface
         self.rect = self.textsurf.get_rect() # creating the rectangle for the text
 
