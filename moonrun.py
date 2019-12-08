@@ -416,7 +416,7 @@ def introPlay():
         window.blit(mask, (0, 0))           
         if incount == 20:
             introsound.play()
-            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))  # Text alignment for presents subtext 
+            presents = Text(winwidth//2, winheight//2+50, "presents", font, vsmallfont, (255,255,255))  # Text alignment for presents subtext 
             presents.show_text()
         pygame.display.update()
         if incount >= 60:
@@ -645,7 +645,7 @@ def endScreen():
         gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
         gomsg.show_text()
         goprompt = Text(winwidth//2, 350, \
-            "Restart [R]        High Score[H]        Main Menu[E]        Exit[ESC]", font, 15, fontcolour)
+            "Restart [R]        High Score[H]        Main Menu[E]        Exit[ESC]", font, vsmallfont, fontcolour)
         goprompt.show_text()
             
        
@@ -735,7 +735,7 @@ def creditScene():
         linecount = 0
         for line in credit:
             linecount += 20
-            i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
+            i = Text(winwidth//2, 20+linecount, line, font, vsmallfont, fontcolour)
             i.show_text()
 
         pygame.display.update() 
