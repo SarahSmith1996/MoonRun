@@ -45,7 +45,7 @@ hole_freq = 50
 item_freq = 350
 
 #fonts
-font = 'font2.ttf' 
+font = 'font.ttf' 
 
 # set font sizes
 vsmallfont = 15
