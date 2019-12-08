@@ -276,6 +276,48 @@ class displayObject (element):
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
+class Background (Images):
+
+    def __init__(self,x,y,vel,img,width,height):
+        
+        self.x = x
+        self.y = y
+        self.vel = vel
+        self.img = img
+        self.width = width
+        self.height = height
+        worldvel = 8
+
+class Backdrop (Background):
+    
+    def draw(self, window):
+        window.blit(pygame.image.load(self.img), (self.x,self.y))
+        window.blit(pygame.image.load(self.img), (self.x+self.winwidth,self.y))
+        if self.x > -self.winwidth:
+            self.x -= self.vel
+        else:
+            self.x = 0
+        
+class BackgroundObjects (Background):
+    # displayobjects
+    def draw(self,window):
+        window.blit(pygame.image.load(self.img),(self.x,self.y))
+
+class Items (BackgroundObjects):
+
+    def __init__(self,x,y,vel,img,width,height):
+        self.x = x
+        self.y = y
+        self.vel = vel
+        self.img = img
+        self.width = width
+        self.height = height
+
+    def draw(self,window,secimg):
+        if (pygame.time.get_ticks()//500)%2: 
+            window.blit(pygame.image.load(self.img),(self.x,self.y))
+        else:
+            window.blit(pygame.image.load(secimg),(self.x,self.y))
 
 class Meteorite (displayObject):
 
