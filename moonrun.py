@@ -464,7 +464,7 @@ def startScreen():
             begincolour = fontcolour
         else:
             begincolour = white
-        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, begincolour)
+        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, smallfont, begincolour)
         text2.show_text()
 
         pygame.display.update()
@@ -482,8 +482,8 @@ def playerSelect():
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, fontcolour) # 1 Player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, fontcolour) # 2 player text
         text1.show_text() # method to show the text
         text2.show_text()
         pygame.display.update()
@@ -516,7 +516,7 @@ def playerSelect():
         
         text1ctrl = True
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
-            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
+            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, p1colour) # redraws the text but changes colour 
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -532,7 +532,7 @@ def playerSelect():
         
         text2ctrl = True            
         while text2.mouse_over() and text2ctrl:
-            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
+            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, p2colour )  
             title.draw(window)
             text1.show_text()
             text2.show_text()
@@ -654,7 +654,7 @@ def endScreen():
 
         if winner != 0:
             
-            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
+            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, smallfont, fontcolour) 
             winner.move = True
             winner.left = False
             winner.x = winwidth/2 -winner.width/2
@@ -665,14 +665,14 @@ def endScreen():
         else:
             if not twoplayer:
                 if newhigh:
-                    congratulations = Text(winwidth//2, 260, "New high score".format(str(myscore).zfill(4)), font, 25, p1colour)
+                    congratulations = Text(winwidth//2, 260, "New high score".format(str(myscore).zfill(4)), font, smallfont, p1colour)
                     if (pygame.time.get_ticks()//500)%2: 
                         congratulations.show_text()
-                newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, 25, white)
+                newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, smallfont, white)
                 newscore.show_text()
                 
             else:
-                winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, 25, fontcolour)
+                winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, smallfont, fontcolour)
                 winnername.show_text()
                 
         
@@ -693,12 +693,12 @@ def endScreen():
         if keys[pygame.K_h]:
             pygame.draw.rect(window,(fontcolour),(winwidth/2-250,0,500,400))
             linecount = 0
-            hiscores = Text(winwidth//2, 100, "High Scores:", font, 25, black) 
+            hiscores = Text(winwidth//2, 100, "High Scores:", font, smallfont, black) 
             hiscores.show_text()
             
             for score in highscore.scoreList:
                 linecount += 1
-                i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, 25, black)
+                i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, smallfont, black)
                 i.show_text()
             pygame.display.update()
         
@@ -955,7 +955,7 @@ while run:
         
         redrawGameWindow() 
         if not twoplayer:
-            timer = Text(winwidth//2, 40, str(playtime).zfill(4), font, 25, fontcolour)
+            timer = Text(winwidth//2, 40, str(playtime).zfill(4), font, smallfont, fontcolour)
             timer.show_text()
         pygame.display.update() 
 
