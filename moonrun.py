@@ -221,13 +221,13 @@ class player (object):
         for hole in holelist:
             if self.x > hole.x + 5 and self.x < hole.x+hole.width-self.width and self.y >= winheight-91:
                 if self.alive:
-                    death.play()
+                    pygame.mixer.Channel(1).play(death)
                 self.alive = False
                 self.y += 15
 
         if self.x <= -50 and self.alive:
             self.isJump = False #so that jetpack doesn't drown out death sound
-            death.play()
+            pygame.mixer.Channel(1).play(death)
             self.alive = False
             self.y += 2000
 
@@ -246,10 +246,8 @@ class player (object):
                 if meteo.x <= self.x+self.width//2 <= meteo.x+meteo.width+10:
                     self.ontop = True
                     self.floorpos = pOntoppos
-                    #print("ontop")
         if not self.ontop:
             self.floorpos = pFloorpos
-        #print("Notontop")
         self.ontop = False
         
 
@@ -351,7 +349,7 @@ class scoreboard (object):
 
 
     def reset(self):
-        for i in range(self.LENGTH):
+        for i in range(self.LENGTH+1):
             self.scoreList[i] = 0
 
 
@@ -654,8 +652,10 @@ def endScreen():
                 linecount += 1
                 i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, 25, black)
                 i.show_text()
-                pygame.display.update()
-                    
+            pygame.display.update()
+        
+        if keys[pygame.K_0]:
+            highscore.reset()
 
         if keys[pygame.K_ESCAPE]:
             start.play()
