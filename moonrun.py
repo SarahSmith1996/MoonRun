@@ -34,7 +34,7 @@ pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
 #fonts
-font = 'font.otf' 
+font = 'font2.ttf' 
 
 #Colours
 fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
