@@ -3,7 +3,6 @@
 Created by: Remigius Ezeabasili, Jonas Kohl, Sarah Smith, Mohammad Yazdani
 Music by: Eric Skiff
 
-
 """
 
 
@@ -29,6 +28,7 @@ maxscore = 999999
 #window
 winwidth = 800  # Display window width
 winheight = 400     # Display window height 
+
 window = pygame.display.set_mode((winwidth,winheight))
 pFloorpos = winheight-87
 pOntoppos = winheight-87-64
@@ -43,7 +43,6 @@ white = pygame.Color('white')
 black = pygame.Color('black')         
 p1colour = pygame.Color('red')      
 p2colour = pygame.Color('blue')  
-
 
 
 #images
