@@ -34,7 +34,7 @@ pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
 #fonts
-font = 'font3.otf' 
+font = 'pixel.otf' 
 
 
 #Colours
