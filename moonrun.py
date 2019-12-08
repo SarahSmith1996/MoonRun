@@ -330,8 +330,7 @@ class Text: # creating the text class
         else:
             return False
 
-
-class scoreboard (object):
+class HighscoreBoard (object):
     LENGTH = 4      # 5 High scores 
 
     def __init__(self,scoreList):
@@ -772,14 +771,14 @@ def reset():
     replay = False
     for player in playerlist:
         player.alive = True
-        player.y = winheight-Player.height-16
+        player.y = winheight-player.height-16
         player.isJump = False
         player.ontop = False
         player.leftof = False
         player.rightof = False
         player.speedboost = 0
         player.jumpheight = 10
-        player.jumpCount = Player.jumpheight
+        player.jumpCount = player.jumpheight
         player.neg = 1
         player.vel = (5/4)*worldvel
 
@@ -833,9 +832,9 @@ try:
     highscore = pickle.load(file)
     file.close()
 except FileNotFoundError:
-    highscore = scoreboard([0,0,0,0,0])
+    highscore = HighscoreBoard([0,0,0,0,0])
 except EOFError:
-    highscore = scoreboard([0,0,0,0,0])
+    highscore = HighscoreBoard([0,0,0,0,0])
 
 
 
