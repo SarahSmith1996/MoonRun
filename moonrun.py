@@ -900,11 +900,6 @@ while run:
         if player1.alive:
             playtime += 1 
 
-        if run:
-            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
-            timer.show_text()
-            pygame.display.update()
-
     else:
         if not player1.alive:
             if player2.alive:
@@ -918,6 +913,9 @@ while run:
     #refresh screen
     if not menu and not second_menu and run:
         redrawGameWindow() 
+        if not twoplayer:
+            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
+            timer.show_text()
         pygame.display.update() 
 
     if end:
