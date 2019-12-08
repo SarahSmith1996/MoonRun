@@ -36,6 +36,12 @@ pOntoppos = winheight-87-64
 #fonts
 font = 'font2.ttf' 
 
+# set font sizes
+vsmallfont = 15
+smallfont = 25
+medfont = 35
+bigfont = 55
+
 #Colours
 fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
 white = pygame.Color('white')      
