@@ -481,12 +481,8 @@ def playerSelect():     #player selection screen
             second_menu = False
     
         # For mouse over text sound
-        soundtrigger = False
         if text1.mouse_over() or text2.mouse_over():
-            soundtrigger = True
-            if soundtrigger == True:
                 hover.play()               # Sound can be changed if necessary
-                soundtrigger = False
         
         text1ctrl = True
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
