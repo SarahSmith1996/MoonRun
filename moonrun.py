@@ -771,17 +771,17 @@ def reset():
     end = False
     replay = False
     for player in playerlist:
-        Player.alive = True
-        Player.y = winheight-Player.height-16
-        Player.isJump = False
-        Player.ontop = False
-        Player.leftof = False
-        Player.rightof = False
-        Player.speedboost = 0
-        Player.jumpheight = 10
-        Player.jumpCount = Player.jumpheight
-        Player.neg = 1
-        Player.vel = (5/4)*worldvel
+        player.alive = True
+        player.y = winheight-Player.height-16
+        player.isJump = False
+        player.ontop = False
+        player.leftof = False
+        player.rightof = False
+        player.speedboost = 0
+        player.jumpheight = 10
+        player.jumpCount = Player.jumpheight
+        player.neg = 1
+        player.vel = (5/4)*worldvel
 
     player1.x = winwidth//2
 
