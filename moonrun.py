@@ -435,7 +435,7 @@ def startScreen():
 
         pygame.display.update()
 
-def playerSelect():
+def playerSelect():     #player selection screen
     global run
     global second_menu
     global twoplayer
@@ -448,6 +448,7 @@ def playerSelect():
             if event.type == pygame.QUIT:
                 pygame.quit()
         
+        #shows the text
         text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, fontcolour) # 1 Player text
         text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, fontcolour) # 2 Player text
         text1.show_text() # method to show the text
@@ -455,6 +456,7 @@ def playerSelect():
         pygame.display.update()
         keys=pygame.key.get_pressed()
 
+        #selects twoplayer (keyboard)
         if keys[pygame.K_2]:
             select.play()
             twoplayer = True
@@ -462,12 +464,14 @@ def playerSelect():
             instruc = True
             second_menu = False
         
+        #selects one player (keyboard)
         if keys[pygame.K_1]:
             select.play()
             twoplayer = False
             instruc = True
             second_menu = False
         
+        #leaves game
         if keys[pygame.K_ESCAPE]:
             run = False
             second_menu = False
@@ -488,8 +492,10 @@ def playerSelect():
             text2.show_text()
             pygame.display.update() # updates the display
             
+            #selects twoplayer (mouse)
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_2: # if the mouse is clicked while on the text
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_2: # if the mouse is clicked while on the text 
+                    #also when you press any key during the mouse over so there's lots of ways to start the game (exclude the other key though)
                     select.play()
                     twoplayer = False
                     instruc = True
@@ -504,6 +510,7 @@ def playerSelect():
             text2.show_text()
             pygame.display.update()
             
+            #selects one player mouse
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_1:
                     select.play()
@@ -557,6 +564,7 @@ def pauseMenu():    # Pause Menu during gameplay
         retrymsg.show_text()
         pygame.display.flip()
         
+        #continue text field
         contctrl = True
         while contmsg.mouse_over() and contctrl:
             contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, medfont, white)
@@ -568,7 +576,7 @@ def pauseMenu():    # Pause Menu during gameplay
                     select.play()
                     pause = False
                     contctrl = False
-
+        #restart text field
         retryctrl = True            
         while retrymsg.mouse_over() and retryctrl:
             retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, medfont, white)   
@@ -581,12 +589,12 @@ def pauseMenu():    # Pause Menu during gameplay
                     reset()
                     pause = False
                     retryctrl = False
-        
+        #continue key
         pkeys = pygame.key.get_pressed()
         if pkeys[pygame.K_c]:
             select.play()
             pause = False
-
+        #restart key
         if pkeys[pygame.K_r]:
             select.play()
             reset()
@@ -594,7 +602,7 @@ def pauseMenu():    # Pause Menu during gameplay
 
         pygame.display.update()
 
-def endScreen():
+def endScreen():        #Game over menu
     global menu
     global run
     global endcredits
@@ -604,8 +612,11 @@ def endScreen():
 
     endrun = True
     while endrun:
+
+        #limits frame rate
         clock.tick(27)
 
+        #draws text on screen
         title.draw(window)
         gomsg = Text(winwidth//2, 100, "GAME  OVER", font, bigfont, fontcolour)
         gomsg.show_text()
@@ -614,9 +625,10 @@ def endScreen():
         goprompt.show_text()
             
        
-        
+        #gets key presses
         keys = pygame.key.get_pressed()
 
+        #if there's a winner display their sprite on screen
         if winner != 0:
             
             winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, smallfont, fontcolour) 
@@ -628,6 +640,7 @@ def endScreen():
             winnername.show_text()
             
         else:
+            #if there's no winner because were in single player, show the score and whether they got a highscore
             if not twoplayer:
                 if newhigh:
                     congratulations = Text(winwidth//2, 260, "New high score".format(str(myscore).zfill(4)), font, smallfont, p1colour)
@@ -635,18 +648,18 @@ def endScreen():
                         congratulations.show_text()
                 newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, smallfont, white)
                 newscore.show_text()
-                
+            # in any other case just ask them why they are screwing with the game
             else:
                 winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, smallfont, fontcolour)
                 winnername.show_text()
                 
         
-        
+        #replay game
         if keys[pygame.K_r]:
             select.play()
             reset()
             endrun = False
-
+        #go to start menu
         if keys[pygame.K_e]:
             select.play()
             reset()
@@ -654,7 +667,7 @@ def endScreen():
                 playerlist.pop()
             menu = True
             endrun = False
-
+        #show highscores as pop up
         if keys[pygame.K_h]:
             pygame.draw.rect(window,(fontcolour),(winwidth/2-260,0,520,400))
             linecount = 0
@@ -666,10 +679,10 @@ def endScreen():
                 i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, smallfont, black)
                 i.show_text()
             pygame.display.update()
-        
+        #reset highscores (hidden function)
         if keys[pygame.K_0]:
             highscore.reset()
-
+        #leaves game to credit scene
         if keys[pygame.K_ESCAPE]:
             start.play()
             run = False
@@ -684,7 +697,7 @@ def endScreen():
                 endrun = False 
                 run = False
 
-def creditScene():
+def creditScene():      #creates a simple screen as a credit scene for the game
     global run
     global endcredits
     endcount = 0
@@ -729,7 +742,7 @@ def redrawGameWindow():     # Function used to draw game's objects
     for player in playerlist:
         player.draw(window)
 
-def createAndMove(typ,lst,listLimit,randLimit):
+def createAndMove(typ,lst,listLimit,randLimit):     #creates objects (holes,items,meteors...) randomly and moves them (tweak limits and frequency above) 
     for obj in lst:
         if obj.x <= -obj.width:
             lst.pop(lst.index(obj))
@@ -753,7 +766,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
     for obj in lst:
         obj.x -= worldvel
 
-def reset():        #
+def reset():        #resets all global game variables that have been changed during the run
     global worldvel
     global holelist
     global meteolist
@@ -902,6 +915,7 @@ while run:
             myscore = playtime
             gameovercount += 1
             if highget:
+                #add the score to leaderboard, return True if there is a new high score
                 newhigh = highscore.addscore(myscore)
                 highget = False
         if player1.alive:
