@@ -8,7 +8,7 @@ Music by: Eric Skiff
 Little easter egg:
 
 if you want a cooler, more spacy look (that requires a little more cpu performance, works best on Mac),
-un-hash line 734 (bd2.draw(window)) in redrawGameWindow() ;)
+un-hash line 730 (bd2.draw(window)) in redrawGameWindow() ;)
 """
 
 
