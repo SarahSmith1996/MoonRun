@@ -17,13 +17,13 @@ winner is determined by the last player to survive.
  
 Inspirations
  
-The concept of MoonRun was inspired by the gameplay in the “Dinosaur Game” featured in Google 
+The concept of MoonRun was inspired by the gameplay in the Dinosaur Game featured in Google 
 Chrome. To clarify, we did not refer to any of its source game code. To get to know some of the 
 functionalities of pygame, we referred to a pygame tutorial by Tech with Tim 
 (https://www.youtube.com/watch?v=i6xMBig-pP4&t=620s). From it, we were inspired to create lists 
 to keep track of multiple object instances and iterate through them and implement a jump with a 
 quadratic function. As our game is set in space and we wanted to use jetpacks, we had to remodel 
-the jump entirely though via a linear rise followed by a ‘quadratic’ fall. Also, we used keyboard input 
+the jump entirely though via a linear rise followed by a quadratic fall. Also, we used keyboard input 
 as outlined in the tutorial. All sprites were created and drawn by us and there is no reuse of any 
 game code. The 8-bit style music featured in the game is free to use under Creative Commons 
 Attribution license and all sounds were taken from the free VST library Bitkits. The music is free to 
