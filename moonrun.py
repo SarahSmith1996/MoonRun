@@ -256,102 +256,93 @@ class player (object):
         self.ontop = False
         
 
-class element (object):
+# class element (object):
+
+#     def __init__(self,x,y,vel,img,width,height):
+#         self.x = x
+#         self.y = y
+#         self.vel = vel
+#         self.img = img
+#         self.width = width
+#         self.height = height
+
+
+# class backdrop (element):   # Class for dynamic background in both menu and gameplay
+    
+#     def draw(self, window):
+#         window.blit(pygame.image.load(self.img), (self.x,self.y)) 
+#         window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))  # Creates 2 images, one following from the other. Allows for sidescrolling of background
+#         if self.x > -winwidth: 
+#             self.x -= self.vel
+#         else:
+#             self.x = 0
+        
+# class displayObject (element):  
+
+#     def draw(self,window):
+#         window.blit(pygame.image.load(self.img),(self.x,self.y))
+
+class Background ():
 
     def __init__(self,x,y,vel,img,width,height):
+        
         self.x = x
         self.y = y
         self.vel = vel
         self.img = img
         self.width = width
         self.height = height
+        
 
-
-class backdrop (element):   # Class for dynamic background in both menu and gameplay
+class Backdrop (Background):
     
     def draw(self, window):
-        window.blit(pygame.image.load(self.img), (self.x,self.y)) 
-        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))  # Creates 2 images, one following from the other. Allows for sidescrolling of background
-        if self.x > -winwidth: 
+        window.blit(pygame.image.load(self.img), (self.x,self.y))
+        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))
+        if self.x > -winwidth:
             self.x -= self.vel
         else:
             self.x = 0
         
-class displayObject (element):  
-
+class BackgroundObjects (Background):
+    # displayobjects
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-# class Background (Images):
+class Items (Background):
 
-#     def __init__(self,x,y,vel,img,width,height):
-        
-#         self.x = x
-#         self.y = y
-#         self.vel = vel
-#         self.img = img
-#         self.width = width
-#         self.height = height
-#         worldvel = 8
+    def draw(self,window,secimg):
+        if (pygame.time.get_ticks()//500)%2: 
+            window.blit(pygame.image.load(self.img),(self.x,self.y))
+        else:
+            window.blit(pygame.image.load(secimg),(self.x,self.y))
 
-# class Backdrop (Background):
-    
-#     def draw(self, window):
-#         window.blit(pygame.image.load(self.img), (self.x,self.y))
-#         window.blit(pygame.image.load(self.img), (self.x+self.winwidth,self.y))
-#         if self.x > -self.winwidth:
-#             self.x -= self.vel
-#         else:
-#             self.x = 0
-        
-# class BackgroundObjects (Background):
-#     # displayobjects
-#     def draw(self,window):
-#         window.blit(pygame.image.load(self.img),(self.x,self.y))
+class Meteorite (BackgroundObjects):
 
-# class Items (BackgroundObjects):
+    inhole = False 
 
-#     def __init__(self,x,y,vel,img,width,height):
-#         self.x = x
-#         self.y = y
-#         self.vel = vel
-#         self.img = img
-#         self.width = width
-#         self.height = height
-
-#     def draw(self,window,secimg):
-#         if (pygame.time.get_ticks()//500)%2: 
-#             window.blit(pygame.image.load(self.img),(self.x,self.y))
-#         else:
-#             window.blit(pygame.image.load(secimg),(self.x,self.y))
-
-# class Meteorite (displayObject):
-
-#     inhole = False 
-
-#     def animate(self):
-#         #meteorite animation    
-#         if self.y == winheight - 80 - 32:  # Determines y postion to play meteorite sound
-#             crash.play() # Plays crash sound
+    def animate(self):
+        #meteorite animation    
+        if self.y == winheight - 80 - 32:  # Determines y postion to play meteorite sound
+            crash.play() # Plays crash sound
             
-#         if self.y < winheight - 80: 
-#             self.y += 32
-#         else:
-#             for hole in holelist:
-#                 if self.x > hole.x and self.x < hole.x+hole.width-self.width:   # Condition to check meteor is within hole 
-#                     self.y += 32 # Allows meteor to fall through hole 
-#                     self.inhole = True 
-#             self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
+        if self.y < winheight - 80: 
+            self.y += 32
+        else:
+            for hole in holelist:
+                if self.x > hole.x and self.x < hole.x+hole.width-self.width:   # Condition to check meteor is within hole 
+                    self.y += 32 # Allows meteor to fall through hole 
+                    self.inhole = True 
+            self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
     
 
-# class Item (displayObject):
+class Item (BackgroundObjects):
 
-
-#     def draw(self,window,secimg):
-#         if (pygame.time.get_ticks()//500)%2: 
-#             window.blit(pygame.image.load(self.img),(self.x,self.y))
-#         else:
-#             window.blit(pygame.image.load(secimg),(self.x,self.y))
+    def draw(self,window,secimg):
+        if (pygame.time.get_ticks()//500)%2: 
+            window.blit(pygame.image.load(self.img),(self.x,self.y))
+        else:
+            window.blit(pygame.image.load(secimg),(self.x,self.y))
 
 class Text: # creating the text class 
     
@@ -774,7 +765,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
     objget=random.randint(0,randLimit)
     if objget == 0 and len(lst)<listLimit:
         if typ == "h":
-            x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
+            x = BackgroundObjects(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
         elif typ == "m":
             x = Meteorite(winwidth,0,worldvel,'meteorite.png',64,64)
             fall.play()
@@ -839,8 +830,8 @@ def reset():
 
 
 #class instances
-title = backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+title = Backdrop(0,0,worldvel/2,'starry.png',800,400)
+bd1 = Backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
 
 player1 = player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
@@ -899,12 +890,12 @@ while run:
     introPlay()
     startScreen()
     playerSelect()
-    """
+   
     #randomly generate and move holes, meteors and items. 
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,1,100)
     createAndMove('i',itemlist,1,300)
-    """       
+        
     
     #player control
     player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
