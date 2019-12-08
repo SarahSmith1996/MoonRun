@@ -586,15 +586,15 @@ def pauseMenu():    # Pause Menu during gameplay
                 pause = False
         
         # Continue and Retry prompts 
-        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)     
-        retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
+        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, medfont, fontcolour)     
+        retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, medfont, fontcolour)
         contmsg.show_text()
         retrymsg.show_text()
         pygame.display.flip()
         
         contctrl = True
         while contmsg.mouse_over() and contctrl:
-            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
+            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, medfont, white)
             contmsg.show_text()
             retrymsg.show_text()
             pygame.display.flip()
@@ -606,7 +606,7 @@ def pauseMenu():    # Pause Menu during gameplay
 
         retryctrl = True            
         while retrymsg.mouse_over() and retryctrl:
-            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
+            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, medfont, white)   
             retrymsg.show_text()
             contmsg.show_text()
             pygame.display.flip()
