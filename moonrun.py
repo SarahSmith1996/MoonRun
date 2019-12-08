@@ -22,19 +22,36 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()     # Used to track time in the game 
 worldvel = 8    # Velocity of sidescroll
-maxscore = 999999
+worldvel_increase = 4   #increase over time (after 500 ticks)
+maxscore = 999999 #maimum score you can reach
 
 
-#window
+#window properties
 winwidth = 800  # Display window width
 winheight = 400     # Display window height 
 
 window = pygame.display.set_mode((winwidth,winheight))
+#ground positions for gravity, floor level and platform level
 pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
+
+#random objects settings (change frequency and limit for randomly generated images)
+meteorite_limit = 1
+hole_limit = 1
+item_limit = 2
+meteorite_freq = 120
+hole_freq = 50
+item_freq = 350
+
 #fonts
-font = 'font3.otf' 
+font = 'font.ttf' 
+
+# set font sizes
+vsmallfont = 15
+smallfont = 25
+medfont = 35
+bigfont = 55
 
 #Colours
 fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
@@ -50,6 +67,7 @@ gameintro = pygame.image.load('intro.png')
 info1 = pygame.image.load('info1.png') 
 info2 = pygame.image.load('info2.png') 
 
+#imagelists for moving objects
 p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
 p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png'), pygame.image.load('p23.png'), pygame.image.load('p24.png'), pygame.image.load('p25.png'), pygame.image.load('p26.png'), pygame.image.load('p27.png'), pygame.image.load('p28.png')]
 p1stand = pygame.image.load('p10.png')
@@ -71,9 +89,7 @@ select = pygame.mixer.Sound('selection.wav')
 itemsound = pygame.mixer.Sound('item.wav') 
 speed = pygame.mixer.Sound('speed.wav') 
 
-
-
-class player (object):
+class Player (object):      #player class that creates and moves players and manages their interaction with their surroundings
 
     def __init__(self,x,y,width,height,movelist,standimg,jumpimg,name):
         self.x = x
@@ -86,41 +102,42 @@ class player (object):
         self.name = name
 
         self.vel = worldvel+2  # Allows player to move in the world
-        self.isJump = False
-        self.jumpheight = 10
-        self.jumpCount = self.jumpheight
-        self.fallCount = 0
+        self.isJump = False     #player (not) currently jumping
+        self.jumpheight = 10    #highest possible jump
+        self.jumpCount = self.jumpheight    #a backwards counter to limit the jump
+        self.fallCount = 0  #a counter that increases fall speed 
         self.left = False
         self.step = 0 
         self.move = False
         self.alive = True
 
-        self.leftof = False
-        self.rightof = False
-        self.ontop = False
-        self.floorpos = pFloorpos
+        self.leftof = False     #collision to the left
+        self.rightof = False    #collision to the right
+        self.ontop = False      #player ontop of platform
+        self.floorpos = pFloorpos   #current 0-point for falling down (ground for gravity)
         self.col = False    # Collision detection 
 
-        self.speedboost = 0
-        self.maxspeedboost = 6
-        self.maxjumpheight = 16
+        self.speedboost = 0     #keeps track of item speed increase 
+        self.maxspeedboost = 6     #max jump increase by item
+        self.maxjumpheight = 16     #max vel increase by item
 
 
-    def moving(self, leftB, rightB, jumpB):
+    def moving(self, leftB, rightB, jumpB):     #default movement and player controls
 
-        self.platform()
+        self.platform(meteolist)
         #default movement
         self.x -= worldvel
-        self.collision()
+        self.itemcollision()
+        self.playerdeath()
 
-        #gravity 
+        #gravity simulation
         if self.alive:
             falldistance= (self.fallCount**2) * 0.25
             if self.y + falldistance <= self.floorpos:
                 if self.jumpCount == 0:
                     self.y += falldistance
                     self.fallCount += 0.5
-                else:
+                else:   #different fall from boulder so you can jump more fluently
                     if self.jumpCount == self.jumpheight and self.y < pFloorpos and not self.isJump:
                         if not self.ontop:
                             self.y += 8
@@ -135,8 +152,8 @@ class player (object):
         #controls
         if self.alive:
             if leftB and not self.rightof:
-                self.left = True  ## Can move left 
-                self.x -= self.vel ## Create an offset
+                self.left = True  ## looks to the left
+                self.x -= self.vel ## move left
                 if not self.isJump:  
                     self.move = True  
                     step.play()
@@ -144,7 +161,7 @@ class player (object):
             elif rightB and not self.leftof:
                 self.left = False
                 if self.x <= winwidth:
-                    self.x += self.vel
+                    self.x += self.vel #move right
                 if not self.isJump:
                     self.move = True
                     step.play()
@@ -160,7 +177,7 @@ class player (object):
             else:
                 self.jump()
     
-    def jump (self):
+    def jump (self):    #player jump
 
         if self.jumpCount > 0:
             self.y -= 8
@@ -174,7 +191,7 @@ class player (object):
             if not self.left: 
                 window.blit(self.movelist[self.step//2], (self.x,self.y))   # Integer division the number of steps to determine which sprite image to use 
             else: 
-                window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))
+                window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))  #flip images when player faces the other way
             self.step += 1
         elif self.isJump and self.jumpCount > 0:
             if not self.left:
@@ -194,9 +211,8 @@ class player (object):
                 window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
     
    
-    def collision(self):
-
-        # Collision with item 
+    def itemcollision(self): # Collision with item and item actions
+        
         for item in itemlist:
             if  item.x < self.x + self.width//2 < item.x + item.width:
                 if self.y+self.height >= item.y:
@@ -211,12 +227,9 @@ class player (object):
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))   
 
-        if not self.col:
-            self.leftof = False
-            self.rightof = False
-        self.col = False
 
-        #player death
+
+    def playerdeath(self):      #death conditions: left of screen and falling into holes
         for hole in holelist:
             if self.x > hole.x + 5 and self.x < hole.x+hole.width-self.width and self.y >= winheight-91:
                 if self.alive:
@@ -230,10 +243,9 @@ class player (object):
             self.alive = False
             self.y += 2000
 
-    def platform(self):
+    def platform(self,objlist):  # interaction with meteorite (other platforms could be added)
 
-        # interaction with meteor
-        for meteo in meteolist:
+        for meteo in objlist:
             if not meteo.inhole:
                 if meteo.x < self.x + self.width - 20 < meteo.x + meteo.width and self.y + self.height > meteo.y + 10:
                     self.leftof = True
@@ -248,36 +260,47 @@ class player (object):
         if not self.ontop:
             self.floorpos = pFloorpos
         self.ontop = False
-        
 
-class element (object):
+        if not self.col:
+            self.leftof = False
+            self.rightof = False
+        self.col = False
+        
+class Background (object):      #any visible object that it not the player
 
     def __init__(self,x,y,vel,img,width,height):
+        
         self.x = x
         self.y = y
-        self.vel = vel
+        self.vel = vel  #speed/velocity
         self.img = img
         self.width = width
         self.height = height
-
-
-class backdrop (element):   # Class for dynamic background in both menu and gameplay
+        
+class Backdrop (Background):        #backdrops that continously scroll through the screen
     
     def draw(self, window):
-        window.blit(pygame.image.load(self.img), (self.x,self.y)) 
-        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))  # Creates 2 images, one following from the other. Allows for sidescrolling of background
-        if self.x > -winwidth: 
+        window.blit(pygame.image.load(self.img), (self.x,self.y))
+        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))
+        if self.x > -winwidth:
             self.x -= self.vel
         else:
             self.x = 0
         
-class displayObject (element):  
-
+class BackgroundObjects (Background):   #object in environment
+    # displayobjects
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
+class Item (BackgroundObjects): #item subclass (specific draw method)
 
-class Meteorite (displayObject):
+    def draw(self,window,secimg):
+        if (pygame.time.get_ticks()//500)%2: 
+            window.blit(pygame.image.load(self.img),(self.x,self.y))
+        else:
+            window.blit(pygame.image.load(secimg),(self.x,self.y))
+
+class Meteorite (BackgroundObjects): #meteorite subclass (specific animation method (falling down))
 
     inhole = False 
 
@@ -295,16 +318,6 @@ class Meteorite (displayObject):
                     self.inhole = True 
             self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
     
-
-class Item (displayObject):
-
-
-    def draw(self,window,secimg):
-        if (pygame.time.get_ticks()//500)%2: 
-            window.blit(pygame.image.load(self.img),(self.x,self.y))
-        else:
-            window.blit(pygame.image.load(secimg),(self.x,self.y))
-
 class Text: # creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
@@ -328,8 +341,7 @@ class Text: # creating the text class
         else:
             return False
 
-
-class scoreboard (object):
+class HighscoreBoard (object): #class for highscores so we can use pickle to save them into file
     LENGTH = 4      # 5 High scores 
 
     def __init__(self,scoreList):
@@ -352,7 +364,7 @@ class scoreboard (object):
             self.scoreList[i] = 0
 
 
-def introPlay():
+def introPlay():        #intro for the game 
     incount = 0
     global intro
     global run
@@ -363,12 +375,12 @@ def introPlay():
 
         mask = pygame.Surface((winwidth, winheight))
         mask = mask.convert()
-        mask.fill(black)
+        mask.fill(black)        #shows a mask that gradually disappears to reveal the logo
         mask.set_alpha(255-10*incount)      # Gradually decreases transparency of black screen to load in logo 
         window.blit(mask, (0, 0))           
         if incount == 20:
-            introsound.play()
-            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))  # Text alignment for presents subtext 
+            introsound.play() 
+            presents = Text(winwidth//2, winheight//2+50, "presents", font, vsmallfont, (255,255,255))  # Text alignment for presents subtext 
             presents.show_text()
         pygame.display.update()
         if incount >= 60:
@@ -381,8 +393,7 @@ def introPlay():
                 intro = False
                 run = False
 
-
-def startScreen():
+def startScreen():      #shows the start screen (any key or mouse click to leave it)
     #game menu
     global menu
     global second_menu
@@ -396,11 +407,12 @@ def startScreen():
                 run = False
                 menu = False
         
+            #mouse click to leave
             if event.type == pygame.MOUSEBUTTONDOWN:
                 start.play()
                 menu = False
                 second_menu = True
-        
+            #...or key press to leave
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
@@ -409,19 +421,19 @@ def startScreen():
                     second_menu = True
                     menu = False
         title.draw(window)
-    
-        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
+        #shows the text
+        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, bigfont, fontcolour)
         text.show_text() 
         if (pygame.time.get_ticks()//500)%2:
             begincolour = fontcolour
         else:
             begincolour = white
-        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, 25, begincolour)
+        text2 = Text(winwidth//2, winheight//1.5, 'Press any key to begin', font, smallfont, begincolour)
         text2.show_text()
 
         pygame.display.update()
 
-def playerSelect():
+def playerSelect():     #player selection screen
     global run
     global second_menu
     global twoplayer
@@ -434,13 +446,15 @@ def playerSelect():
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, fontcolour) # 2 player text
+        #shows the text
+        text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, fontcolour) # 1 Player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, fontcolour) # 2 Player text
         text1.show_text() # method to show the text
         text2.show_text()
         pygame.display.update()
         keys=pygame.key.get_pressed()
 
+        #selects twoplayer (keyboard)
         if keys[pygame.K_2]:
             select.play()
             twoplayer = True
@@ -448,12 +462,14 @@ def playerSelect():
             instruc = True
             second_menu = False
         
+        #selects one player (keyboard)
         if keys[pygame.K_1]:
             select.play()
             twoplayer = False
             instruc = True
             second_menu = False
         
+        #leaves game
         if keys[pygame.K_ESCAPE]:
             run = False
             second_menu = False
@@ -468,14 +484,16 @@ def playerSelect():
         
         text1ctrl = True
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
-            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, 25, p1colour) # redraws the text but changes colour 
+            text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, p1colour) # redraws the text but changes colour 
             title.draw(window)
             text1.show_text()
             text2.show_text()
             pygame.display.update() # updates the display
             
+            #selects twoplayer (mouse)
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_2: # if the mouse is clicked while on the text
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_2: # if the mouse is clicked while on the text 
+                    #also when you press any key during the mouse over so there's lots of ways to start the game (exclude the other key though)
                     select.play()
                     twoplayer = False
                     instruc = True
@@ -484,12 +502,13 @@ def playerSelect():
         
         text2ctrl = True            
         while text2.mouse_over() and text2ctrl:
-            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, 25, p2colour )  
+            text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, p2colour )  
             title.draw(window)
             text1.show_text()
             text2.show_text()
             pygame.display.update()
             
+            #selects one player mouse
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN and event.key != pygame.K_1:
                     select.play()
@@ -524,7 +543,6 @@ def instructionloop(twoplayer): # Instruction page before game starts
                     select.play()
                     trigger = False
 
-
 def pauseMenu():    # Pause Menu during gameplay 
     pause = True
     global run
@@ -538,15 +556,16 @@ def pauseMenu():    # Pause Menu during gameplay
                 pause = False
         
         # Continue and Retry prompts 
-        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)     
-        retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
+        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, medfont, fontcolour)     
+        retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, medfont, fontcolour)
         contmsg.show_text()
         retrymsg.show_text()
         pygame.display.flip()
         
+        #continue text field
         contctrl = True
         while contmsg.mouse_over() and contctrl:
-            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, white)
+            contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, medfont, white)
             contmsg.show_text()
             retrymsg.show_text()
             pygame.display.flip()
@@ -555,10 +574,10 @@ def pauseMenu():    # Pause Menu during gameplay
                     select.play()
                     pause = False
                     contctrl = False
-
+        #restart text field
         retryctrl = True            
         while retrymsg.mouse_over() and retryctrl:
-            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, white)   
+            retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, medfont, white)   
             retrymsg.show_text()
             contmsg.show_text()
             pygame.display.flip()
@@ -568,12 +587,12 @@ def pauseMenu():    # Pause Menu during gameplay
                     reset()
                     pause = False
                     retryctrl = False
-        
+        #continue key
         pkeys = pygame.key.get_pressed()
         if pkeys[pygame.K_c]:
             select.play()
             pause = False
-
+        #restart key
         if pkeys[pygame.K_r]:
             select.play()
             reset()
@@ -581,7 +600,7 @@ def pauseMenu():    # Pause Menu during gameplay
 
         pygame.display.update()
 
-def endScreen():
+def endScreen():        #Game over menu
     global menu
     global run
     global endcredits
@@ -591,22 +610,26 @@ def endScreen():
 
     endrun = True
     while endrun:
+
+        #limits frame rate
         clock.tick(27)
 
+        #draws text on screen
         title.draw(window)
-        gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
+        gomsg = Text(winwidth//2, 100, "GAME  OVER", font, bigfont, fontcolour)
         gomsg.show_text()
-        goprompt = Text(winwidth//2, 350, "Restart [R]                           High Score[H]\
-                                       Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
+        goprompt = Text(winwidth//2, 350, \
+            "Restart [R]        High Score[H]        Main Menu[E]        Exit[ESC]", font, vsmallfont, fontcolour)
         goprompt.show_text()
             
        
-        
+        #gets key presses
         keys = pygame.key.get_pressed()
 
+        #if there's a winner display their sprite on screen
         if winner != 0:
             
-            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, 25, fontcolour) 
+            winnername = Text(winwidth//2, 300, "Winner {}".format(winner.name), font, smallfont, fontcolour) 
             winner.move = True
             winner.left = False
             winner.x = winwidth/2 -winner.width/2
@@ -615,25 +638,26 @@ def endScreen():
             winnername.show_text()
             
         else:
+            #if there's no winner because were in single player, show the score and whether they got a highscore
             if not twoplayer:
                 if newhigh:
-                    congratulations = Text(winwidth//2, 260, "New high score".format(str(myscore).zfill(4)), font, 25, p1colour)
+                    congratulations = Text(winwidth//2, 260, "New high score".format(str(myscore).zfill(4)), font, smallfont, p1colour)
                     if (pygame.time.get_ticks()//500)%2: 
                         congratulations.show_text()
-                newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, 25, white)
+                newscore = Text(winwidth//2, 300, "Your score: {}".format(str(myscore).zfill(4)), font, smallfont, white)
                 newscore.show_text()
-                
+            # in any other case just ask them why they are screwing with the game
             else:
-                winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, 25, fontcolour)
+                winnername = Text(winwidth//2, 300, "Did you do that on purpose?", font, smallfont, fontcolour)
                 winnername.show_text()
                 
         
-        
+        #replay game
         if keys[pygame.K_r]:
             select.play()
             reset()
             endrun = False
-
+        #go to start menu
         if keys[pygame.K_e]:
             select.play()
             reset()
@@ -641,22 +665,22 @@ def endScreen():
                 playerlist.pop()
             menu = True
             endrun = False
-
+        #show highscores as pop up
         if keys[pygame.K_h]:
-            pygame.draw.rect(window,(fontcolour),(winwidth/2-250,0,500,400))
+            pygame.draw.rect(window,(fontcolour),(winwidth/2-260,0,520,400))
             linecount = 0
-            hiscores = Text(winwidth//2, 100, "High Scores:", font, 25, black) 
+            hiscores = Text(winwidth//2, 100, "High Scores:", font, smallfont, black) 
             hiscores.show_text()
             
             for score in highscore.scoreList:
                 linecount += 1
-                i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, 25, black)
+                i = Text(winwidth//2, 100+linecount*40, str(linecount)+". . . . . . . ." +str(score).zfill(6), font, smallfont, black)
                 i.show_text()
             pygame.display.update()
-        
+        #reset highscores (hidden function)
         if keys[pygame.K_0]:
             highscore.reset()
-
+        #leaves game to credit scene
         if keys[pygame.K_ESCAPE]:
             start.play()
             run = False
@@ -671,11 +695,11 @@ def endScreen():
                 endrun = False 
                 run = False
 
-def creditScene():
+def creditScene():      #creates a simple screen as a credit scene for the game
     global run
     global endcredits
     endcount = 0
-    while endcredits and endcount <300:
+    while endcredits and endcount <100:
         
         credit = ["Moon Run","","Game and visuals:","",\
             "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
@@ -687,7 +711,7 @@ def creditScene():
         linecount = 0
         for line in credit:
             linecount += 20
-            i = Text(winwidth//2, 20+linecount, line, font, 15, fontcolour)
+            i = Text(winwidth//2, 20+linecount, line, font, vsmallfont, fontcolour)
             i.show_text()
 
         pygame.display.update() 
@@ -698,10 +722,10 @@ def creditScene():
                     endcredits = False
                     run = False
 
-
 def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
+    bd2.draw(window)
     pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
     for holes in holelist:
         holes.draw(window)
@@ -717,7 +741,7 @@ def redrawGameWindow():     # Function used to draw game's objects
     for player in playerlist:
         player.draw(window)
 
-def createAndMove(typ,lst,listLimit,randLimit):
+def createAndMove(typ,lst,listLimit,randLimit):     #creates objects (holes,items,meteors...) randomly and moves them (tweak limits and frequency above) 
     for obj in lst:
         if obj.x <= -obj.width:
             lst.pop(lst.index(obj))
@@ -726,7 +750,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
     objget=random.randint(0,randLimit)
     if objget == 0 and len(lst)<listLimit:
         if typ == "h":
-            x = displayObject(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
+            x = BackgroundObjects(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
         elif typ == "m":
             x = Meteorite(winwidth,0,worldvel,'meteorite.png',64,64)
             fall.play()
@@ -741,8 +765,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
     for obj in lst:
         obj.x -= worldvel
 
-
-def reset():
+def reset():        #resets all global game variables that have been changed during the run
     global worldvel
     global holelist
     global meteolist
@@ -790,26 +813,27 @@ def reset():
     pygame.mixer.music.play(-1,0.0)
 
 
+"""
+---------GAME INITIALISATION-----------------------
+"""
+
 #class instances
-title = backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
-
-player1 = player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
-
-
+title = Backdrop(0,0,worldvel//2,'starry.png',800,400)  #moving starry sky
+bd1 = Backdrop(0,0,worldvel//8,'hills_bg.png',800,400)   #hills in background
+bd2 = Backdrop(0,70,worldvel//4,'hills_fg.png',800,400)   #hills in background
+player1 = Player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
+player2 = Player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
 
 #start conditions
-
-itemlist=[]
+itemlist=[] #these lists collect objects so we can interact with all instances
 holelist=[]
 meteolist=[]
-allobjlist = [itemlist,holelist,meteolist]
 playerlist = [player1]
-gameovercount = 0
+gameovercount = 0  #creates latency between player death and game over
 winner = 0
-playtime = 0
-speedcount = 0
+playtime = 0    #used for highscore (only in single player)
+speedcount = 0  #increments to speed up the game eventually
+#trigger variables for menus 
 intro = True
 end = False
 replay = False
@@ -833,15 +857,22 @@ try:
     highscore = pickle.load(file)
     file.close()
 except FileNotFoundError:
-    highscore = scoreboard([0,0,0,0,0])
+    highscore = HighscoreBoard([0,0,0,0,0])
 except EOFError:
-    highscore = scoreboard([0,0,0,0,0])
+    highscore = HighscoreBoard([0,0,0,0,0])
 
 
-#main game loop
+
+"""
+----------MAIN GAME LOOP-----------------
+"""
 run = True
 while run:
+
+    #limits frame rate
     clock.tick(27)
+
+    #gets the key presses
     keys = pygame.key.get_pressed()
 
     #leave game 
@@ -849,15 +880,16 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+    # intro and start menus
     introPlay()
     startScreen()
     playerSelect()
-
+   
     #randomly generate and move holes, meteors and items. 
-    createAndMove('h',holelist,1,50)
-    createAndMove('m',meteolist,1,100)
-    createAndMove('i',itemlist,1,300)
-
+    createAndMove('h',holelist,hole_limit,hole_freq)
+    createAndMove('m',meteolist,meteorite_limit,meteorite_freq)
+    createAndMove('i',itemlist,item_limit,item_freq)
+        
     
     #player control
     player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
@@ -869,29 +901,32 @@ while run:
         select.play()
         pauseMenu()
 
-    #speed up
+    #speed up the game after 500 ticks
     speedcount += 1
     if speedcount % 500 == 0:
-        worldvel *= 1.5
+        worldvel += worldvel_increase
         speed.play()
     player1.vel = worldvel+2 + player1.speedboost
     player2.vel = worldvel+2 + player2.speedboost
-    bd1.vel = worldvel/8
+    bd1.vel = worldvel//8
+    bd2.vel = worldvel//4
 
     #game over conditions
     if gameovercount > 20:
         end = True
     
+    #manages scores and game over in single player mode
     if not twoplayer:
         if not player1.alive:
             myscore = playtime
             gameovercount += 1
             if highget:
+                #add the score to leaderboard, return True if there is a new high score
                 newhigh = highscore.addscore(myscore)
                 highget = False
         if player1.alive:
             playtime += 1 
-
+    #...and twoplayer mode
     else:
         if not player1.alive:
             if player2.alive:
@@ -902,19 +937,22 @@ while run:
                 winner = player1 
                 gameovercount += 1 
     
-    #refresh screen
+    #refresh screen (but not during menus)
     if not menu and not second_menu and run:
-
-        
+        #draws everything on screen
         redrawGameWindow() 
         if not twoplayer:
-            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
+            #creates the timer on screen in single player mode
+            scoreshow = Text(winwidth//2, 15, "Score", font, vsmallfont, fontcolour)
+            timer = Text(winwidth//2, 40, str(playtime).zfill(4), font, smallfont, fontcolour)
             timer.show_text()
+            scoreshow.show_text()
         pygame.display.update() 
 
+    #game over menu
     if end:
         endScreen() 
-    
+    #end credits
     if endcredits:
         creditScene()
     
