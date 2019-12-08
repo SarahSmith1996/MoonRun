@@ -1,4 +1,5 @@
-Game Description 
+Game Description
+ 
 MoonRun is a 2D side scrolling sci-fi arcade game developed by coolPeeps1. Set on the moon, the 
 player takes the role of an astronaut who is tasked to avoid craters, which the player can fall 
 through, and meteorites which present as an obstacle to the player. The player can utilise their 
@@ -12,8 +13,10 @@ scores as it features an in-game leaderboard. The game is accompanied by an 8-bi
 and art style, reminiscent of early NES and arcade games. Please see the inspirations section for 
 further clarification. The game also features a 2-player mode. The 2nd player is controlled using the 
 W, A and S keys. This plays identically to the singleplayer mode, except there is no score tracker. The 
-winner is determined by the last player to survive. 
-Inspirations 
+winner is determined by the last player to survive.
+ 
+Inspirations
+ 
 The concept of MoonRun was inspired by the gameplay in the “Dinosaur Game” featured in Google 
 Chrome. To clarify, we did not refer to any of its source game code. To get to know some of the 
 functionalities of pygame, we referred to a pygame tutorial by Tech with Tim 
