@@ -33,6 +33,14 @@ window = pygame.display.set_mode((winwidth,winheight))
 pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
+#random objects settings
+meteorite_limit = 1
+hole_limit = 1
+item_limit = 2
+meteorite_freq = 120
+hole_freq = 50
+item_freq = 350
+
 #fonts
 font = 'font2.ttf' 
 
@@ -114,7 +122,7 @@ class Player (object):
 
     def moving(self, leftB, rightB, jumpB):
 
-        self.platform()
+        self.platform(meteolist)
         #default movement
         self.x -= worldvel
         self.collision()
@@ -236,10 +244,10 @@ class Player (object):
             self.alive = False
             self.y += 2000
 
-    def platform(self):
+    def platform(self,objlist):
 
         # interaction with meteor
-        for meteo in meteolist:
+        for meteo in objlist:
             if not meteo.inhole:
                 if meteo.x < self.x + self.width - 20 < meteo.x + meteo.width and self.y + self.height > meteo.y + 10:
                     self.leftof = True
@@ -593,7 +601,7 @@ def endScreen():
         clock.tick(27)
 
         title.draw(window)
-        gomsg = Text(winwidth//2, 100, "Game Over", font, bigfont, fontcolour)
+        gomsg = Text(winwidth//2, 100, "GAME  OVER", font, bigfont, fontcolour)
         gomsg.show_text()
         goprompt = Text(winwidth//2, 350, \
             "Restart [R]        High Score[H]        Main Menu[E]        Exit[ESC]", font, vsmallfont, fontcolour)
@@ -642,7 +650,7 @@ def endScreen():
             endrun = False
 
         if keys[pygame.K_h]:
-            pygame.draw.rect(window,(fontcolour),(winwidth/2-250,0,500,400))
+            pygame.draw.rect(window,(fontcolour),(winwidth/2-260,0,520,400))
             linecount = 0
             hiscores = Text(winwidth//2, 100, "High Scores:", font, smallfont, black) 
             hiscores.show_text()
@@ -674,7 +682,7 @@ def creditScene():
     global run
     global endcredits
     endcount = 0
-    while endcredits and endcount <300:
+    while endcredits and endcount <100:
         
         credit = ["Moon Run","","Game and visuals:","",\
             "Remigius Ezeabasili", "Jonas Kohl", "Sarah Smith",\
@@ -850,9 +858,9 @@ while run:
     playerSelect()
    
     #randomly generate and move holes, meteors and items. 
-    createAndMove('h',holelist,1,50)
-    createAndMove('m',meteolist,1,100)
-    createAndMove('i',itemlist,1,300)
+    createAndMove('h',holelist,hole_limit,hole_freq)
+    createAndMove('m',meteolist,meteorite_limit,meteorite_freq)
+    createAndMove('i',itemlist,item_limit,item_freq)
         
     
     #player control
@@ -868,7 +876,7 @@ while run:
     #speed up
     speedcount += 1
     if speedcount % 500 == 0:
-        worldvel *= 1.5
+        worldvel += 4
         speed.play()
     player1.vel = worldvel+2 + player1.speedboost
     player2.vel = worldvel+2 + player2.speedboost
@@ -904,8 +912,10 @@ while run:
         
         redrawGameWindow() 
         if not twoplayer:
+            scoreshow = Text(winwidth//2, 15, "Score", font, vsmallfont, fontcolour)
             timer = Text(winwidth//2, 40, str(playtime).zfill(4), font, smallfont, fontcolour)
             timer.show_text()
+            scoreshow.show_text()
         pygame.display.update() 
 
     if end:
