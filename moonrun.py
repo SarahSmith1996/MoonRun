@@ -1,8 +1,14 @@
 """
--------------------------- MOON RUN -------------------------------
+----------------------------- MOON RUN ---------------------------------
 Created by: Remigius Ezeabasili, Jonas Kohl, Sarah Smith, Mohammad Yazdani
 Music by: Eric Skiff
 
+----2019-----
+
+Little easter egg:
+
+if you want a cooler, more spacy look (that requires a little more cpu performance, works best on Mac),
+un-hash line 731 (bd2.draw(window)) in redrawGameWindow() ;)
 """
 
 
@@ -702,6 +708,7 @@ def creditScene():
 def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
+    #bd2.draw(window)
     pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
     for holes in holelist:
         holes.draw(window)
