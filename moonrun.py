@@ -255,7 +255,7 @@ class Player (object):
             self.floorpos = pFloorpos
         self.ontop = False
         
-class Background ():
+class Background (object):
 
     def __init__(self,x,y,vel,img,width,height):
         
@@ -381,7 +381,6 @@ def introPlay():
             if event.type == pygame.QUIT:
                 intro = False
                 run = False
-
 
 def startScreen():
     #game menu
@@ -524,7 +523,6 @@ def instructionloop(twoplayer): # Instruction page before game starts
                 if event.key == pygame.K_SPACE:     # User presses space to proceed to game 
                     select.play()
                     trigger = False
-
 
 def pauseMenu():    # Pause Menu during gameplay 
     pause = True
@@ -699,7 +697,6 @@ def creditScene():
                     endcredits = False
                     run = False
 
-
 def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
@@ -741,7 +738,6 @@ def createAndMove(typ,lst,listLimit,randLimit):
     #move objects at their velocity
     for obj in lst:
         obj.x -= worldvel
-
 
 def reset():
     global worldvel
