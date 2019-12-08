@@ -458,7 +458,7 @@ def startScreen():
                     menu = False
         title.draw(window)
     
-        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, 55, fontcolour)
+        text = Text(winwidth//2, winheight//3, 'MOON RUN', font, bigfont, fontcolour)
         text.show_text() 
         if (pygame.time.get_ticks()//500)%2:
             begincolour = fontcolour
@@ -642,7 +642,7 @@ def endScreen():
         clock.tick(27)
 
         title.draw(window)
-        gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
+        gomsg = Text(winwidth//2, 100, "Game Over", font, bigfont, fontcolour)
         gomsg.show_text()
         goprompt = Text(winwidth//2, 350, \
             "Restart [R]        High Score[H]        Main Menu[E]        Exit[ESC]", font, vsmallfont, fontcolour)
