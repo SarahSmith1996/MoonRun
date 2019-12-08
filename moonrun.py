@@ -481,13 +481,9 @@ def playerSelect():     #player selection screen
             second_menu = False
     
         # For mouse over text sound
-        soundtrigger = False
         if text1.mouse_over() or text2.mouse_over():
-            soundtrigger = True
-            if soundtrigger == True:
-                hover.play()               # Sound can be changed if necessary
-                soundtrigger = False
-        
+            hover.play()               # Sound can be changed if necessary
+
         text1ctrl = True
         while text1.mouse_over() and text1ctrl: # While loop for when the mouse is on top of the text
             text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, p1colour) # redraws the text but changes colour 
