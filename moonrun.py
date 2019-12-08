@@ -79,7 +79,7 @@ speed = pygame.mixer.Sound('speed.wav')
 
 
 
-class player (object):
+class Player (object):
 
     def __init__(self,x,y,width,height,movelist,standimg,jumpimg,name):
         self.x = x
@@ -437,7 +437,7 @@ def playerSelect():
                 pygame.quit()
         
         text1 = Text(winwidth//2, winheight//3, '1 Player [1]', font, smallfont, fontcolour) # 1 Player text
-        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, fontcolour) # 2 player text
+        text2 = Text(winwidth//2, winheight//2, '2 Player [2]', font, smallfont, fontcolour) # 2 Player text
         text1.show_text() # method to show the text
         text2.show_text()
         pygame.display.update()
@@ -717,7 +717,7 @@ def redrawGameWindow():     # Function used to draw game's objects
             otherimg = "item22.png"
         item.draw(window,otherimg)
     for player in playerlist:
-        player.draw(window)
+        Player.draw(window)
 
 def createAndMove(typ,lst,listLimit,randLimit):
     for obj in lst:
@@ -771,17 +771,17 @@ def reset():
     end = False
     replay = False
     for player in playerlist:
-        player.alive = True
-        player.y = winheight-player.height-16
-        player.isJump = False
-        player.ontop = False
-        player.leftof = False
-        player.rightof = False
-        player.speedboost = 0
-        player.jumpheight = 10
-        player.jumpCount = player.jumpheight
-        player.neg = 1
-        player.vel = (5/4)*worldvel
+        Player.alive = True
+        Player.y = winheight-Player.height-16
+        Player.isJump = False
+        Player.ontop = False
+        Player.leftof = False
+        Player.rightof = False
+        Player.speedboost = 0
+        Player.jumpheight = 10
+        Player.jumpCount = Player.jumpheight
+        Player.neg = 1
+        Player.vel = (5/4)*worldvel
 
     player1.x = winwidth//2
 
@@ -796,8 +796,8 @@ def reset():
 title = Backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = Backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
 
-player1 = player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
-player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
+player1 = Player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
+player2 = Player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
 
 
 
