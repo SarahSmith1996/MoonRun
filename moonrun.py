@@ -717,7 +717,7 @@ def redrawGameWindow():     # Function used to draw game's objects
             otherimg = "item22.png"
         item.draw(window,otherimg)
     for player in playerlist:
-        Player.draw(window)
+        player.draw(window)
 
 def createAndMove(typ,lst,listLimit,randLimit):
     for obj in lst:
