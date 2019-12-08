@@ -34,7 +34,7 @@ pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
 #fonts
-font = 'pixel.otf' 
+font = 'font3.otf' 
 
 
 #Colours
@@ -314,7 +314,7 @@ class Text: # creating the text class
         self.text = text
         self.fontsize = fontsize
         self.colour = colour
-        self.font = pygame.font.Font(font, self.fontsize) # creating the font
+        self.font = pygame.font.SysFont(font, self.fontsize) # creating the font
         self.textsurf = self.font.render(self.text, True, self.colour) # creating the text surface
         self.rect = self.textsurf.get_rect() # creating the rectangle for the text
 
@@ -912,6 +912,8 @@ while run:
     
     #refresh screen
     if not menu and not second_menu and run:
+
+        
         redrawGameWindow() 
         if not twoplayer:
             timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
