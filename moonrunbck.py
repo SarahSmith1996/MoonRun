@@ -34,7 +34,8 @@ pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
 #fonts
-font = 'font3.otf' 
+font = 'pixel.otf' 
+
 
 #Colours
 fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
@@ -702,6 +703,7 @@ def creditScene():
 def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
+    lunar.draw(window)
     pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
     for holes in holelist:
         holes.draw(window)
@@ -793,6 +795,7 @@ def reset():
 #class instances
 title = backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
 player1 = player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
@@ -800,6 +803,8 @@ player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Playe
 
 
 #start conditions
+
+
 
 itemlist=[]
 holelist=[]
@@ -821,10 +826,6 @@ highget = True
 newhigh = False
 firstrun = True
 
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError
 
 
 #loads highscores from file
@@ -836,6 +837,7 @@ except FileNotFoundError:
     highscore = scoreboard([0,0,0,0,0])
 except EOFError:
     highscore = scoreboard([0,0,0,0,0])
+
 
 
 #main game loop
@@ -857,7 +859,13 @@ while run:
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,1,100)
     createAndMove('i',itemlist,1,300)
-
+    
+    # lunar module regularly apperars
+    if lunar.x > -6*winwidth:
+        lunar.x -= worldvel
+    else: 
+        lunar.x = winwidth
+        
     
     #player control
     player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
@@ -892,6 +900,11 @@ while run:
         if player1.alive:
             playtime += 1 
 
+        if run:
+            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
+            timer.show_text()
+            pygame.display.update()
+
     else:
         if not player1.alive:
             if player2.alive:
@@ -904,12 +917,7 @@ while run:
     
     #refresh screen
     if not menu and not second_menu and run:
-
-        
         redrawGameWindow() 
-        if not twoplayer:
-            timer = Text(winwidth-60, 30, str(playtime).zfill(4), font, 25, fontcolour)
-            timer.show_text()
         pygame.display.update() 
 
     if end:
