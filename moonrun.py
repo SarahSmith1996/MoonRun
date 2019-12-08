@@ -276,76 +276,76 @@ class displayObject (element):
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-class Background (Images):
+# class Background (Images):
 
-    def __init__(self,x,y,vel,img,width,height):
+#     def __init__(self,x,y,vel,img,width,height):
         
-        self.x = x
-        self.y = y
-        self.vel = vel
-        self.img = img
-        self.width = width
-        self.height = height
-        worldvel = 8
+#         self.x = x
+#         self.y = y
+#         self.vel = vel
+#         self.img = img
+#         self.width = width
+#         self.height = height
+#         worldvel = 8
 
-class Backdrop (Background):
+# class Backdrop (Background):
     
-    def draw(self, window):
-        window.blit(pygame.image.load(self.img), (self.x,self.y))
-        window.blit(pygame.image.load(self.img), (self.x+self.winwidth,self.y))
-        if self.x > -self.winwidth:
-            self.x -= self.vel
-        else:
-            self.x = 0
+#     def draw(self, window):
+#         window.blit(pygame.image.load(self.img), (self.x,self.y))
+#         window.blit(pygame.image.load(self.img), (self.x+self.winwidth,self.y))
+#         if self.x > -self.winwidth:
+#             self.x -= self.vel
+#         else:
+#             self.x = 0
         
-class BackgroundObjects (Background):
-    # displayobjects
-    def draw(self,window):
-        window.blit(pygame.image.load(self.img),(self.x,self.y))
+# class BackgroundObjects (Background):
+#     # displayobjects
+#     def draw(self,window):
+#         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-class Items (BackgroundObjects):
+# class Items (BackgroundObjects):
 
-    def __init__(self,x,y,vel,img,width,height):
-        self.x = x
-        self.y = y
-        self.vel = vel
-        self.img = img
-        self.width = width
-        self.height = height
+#     def __init__(self,x,y,vel,img,width,height):
+#         self.x = x
+#         self.y = y
+#         self.vel = vel
+#         self.img = img
+#         self.width = width
+#         self.height = height
 
-    def draw(self,window,secimg):
-        if (pygame.time.get_ticks()//500)%2: 
-            window.blit(pygame.image.load(self.img),(self.x,self.y))
-        else:
-            window.blit(pygame.image.load(secimg),(self.x,self.y))
+#     def draw(self,window,secimg):
+#         if (pygame.time.get_ticks()//500)%2: 
+#             window.blit(pygame.image.load(self.img),(self.x,self.y))
+#         else:
+#             window.blit(pygame.image.load(secimg),(self.x,self.y))
 
-class Meteorite (displayObject):
+# class Meteorite (displayObject):
 
-    inhole = False 
+#     inhole = False 
 
-    def animate(self):
-        #meteorite animation    
-        if self.y == winheight - 80 - 32:  # Determines y postion to play meteorite sound
-            crash.play() # Plays crash sound
+#     def animate(self):
+#         #meteorite animation    
+#         if self.y == winheight - 80 - 32:  # Determines y postion to play meteorite sound
+#             crash.play() # Plays crash sound
             
-        if self.y < winheight - 80: 
-            self.y += 32
-        else:
-            for hole in holelist:
-                if self.x > hole.x and self.x < hole.x+hole.width-self.width:   # Condition to check meteor is within hole 
-                    self.y += 32 # Allows meteor to fall through hole 
-                    self.inhole = True 
-            self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
+#         if self.y < winheight - 80: 
+#             self.y += 32
+#         else:
+#             for hole in holelist:
+#                 if self.x > hole.x and self.x < hole.x+hole.width-self.width:   # Condition to check meteor is within hole 
+#                     self.y += 32 # Allows meteor to fall through hole 
+#                     self.inhole = True 
+#             self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
     
 
-class Item (displayObject):
+# class Item (displayObject):
 
 
-    def draw(self,window,secimg):
-        if (pygame.time.get_ticks()//500)%2: 
-            window.blit(pygame.image.load(self.img),(self.x,self.y))
-        else:
-            window.blit(pygame.image.load(secimg),(self.x,self.y))
+#     def draw(self,window,secimg):
+#         if (pygame.time.get_ticks()//500)%2: 
+#             window.blit(pygame.image.load(self.img),(self.x,self.y))
+#         else:
+#             window.blit(pygame.image.load(secimg),(self.x,self.y))
 
 class Text: # creating the text class 
     
