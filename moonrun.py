@@ -255,33 +255,6 @@ class player (object):
             self.floorpos = pFloorpos
         self.ontop = False
         
-
-# class element (object):
-
-#     def __init__(self,x,y,vel,img,width,height):
-#         self.x = x
-#         self.y = y
-#         self.vel = vel
-#         self.img = img
-#         self.width = width
-#         self.height = height
-
-
-# class backdrop (element):   # Class for dynamic background in both menu and gameplay
-    
-#     def draw(self, window):
-#         window.blit(pygame.image.load(self.img), (self.x,self.y)) 
-#         window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))  # Creates 2 images, one following from the other. Allows for sidescrolling of background
-#         if self.x > -winwidth: 
-#             self.x -= self.vel
-#         else:
-#             self.x = 0
-        
-# class displayObject (element):  
-
-#     def draw(self,window):
-#         window.blit(pygame.image.load(self.img),(self.x,self.y))
-
 class Background ():
 
     def __init__(self,x,y,vel,img,width,height):
@@ -293,7 +266,6 @@ class Background ():
         self.width = width
         self.height = height
         
-
 class Backdrop (Background):
     
     def draw(self, window):
