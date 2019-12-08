@@ -744,7 +744,6 @@ def creditScene():
 def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
-    lunar.draw(window)
     pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
     for holes in holelist:
         holes.draw(window)
@@ -836,7 +835,6 @@ def reset():
 #class instances
 title = backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
-lunar = displayObject(winwidth*3,winheight-170,worldvel,'lunarmodule.png',160,160)
 
 player1 = player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
@@ -900,12 +898,6 @@ while run:
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,1,100)
     createAndMove('i',itemlist,1,300)
-    
-    # lunar module regularly apperars
-    if lunar.x > -6*winwidth:
-        lunar.x -= worldvel
-    else: 
-        lunar.x = winwidth
         
     
     #player control
