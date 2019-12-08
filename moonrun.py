@@ -22,28 +22,30 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 #general game values
 pygame.display.set_caption("Moon Run")
-clock = pygame.time.Clock()
-worldvel = 8
+clock = pygame.time.Clock()     # Used to track time in the game 
+worldvel = 8    # Velocity of sidescroll
 maxscore = 999999
 
 
 #window
-winwidth = 800
-winheight = 400
+winwidth = 800  # Display window width
+winheight = 400     # Display window height 
 window = pygame.display.set_mode((winwidth,winheight))
 pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
 #fonts
-font = 'pixel.otf'
+font = 'pixel.otf' 
 
 
 #Colours
-fontcolour = pygame.Color(255,201,14)
-white = pygame.Color('white')
-black = pygame.Color('black')
-p1colour = pygame.Color('red')
-p2colour = pygame.Color('blue')
+fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
+white = pygame.Color('white')      
+black = pygame.Color('black')         
+p1colour = pygame.Color('red')      
+p2colour = pygame.Color('blue')  
+
+
 
 #images
 night = pygame.image.load('starry.png') 
@@ -61,16 +63,16 @@ p2jump = [pygame.image.load('p2j.png'),pygame.image.load('p2j2.png')]
 
 #sounds
 introsound = pygame.mixer.Sound('intro.wav')
-start = pygame.mixer.Sound('start.wav')
+start = pygame.mixer.Sound('start.wav') 
 hover = pygame.mixer.Sound('hover.wav')
-jetpack = pygame.mixer.Sound('jetpack.wav')
-death = pygame.mixer.Sound('death.wav')
-step = pygame.mixer.Sound('step.wav')
-fall = pygame.mixer.Sound('falling.wav')
-crash = pygame.mixer.Sound('crash.wav')
-select = pygame.mixer.Sound('selection.wav')
-itemsound = pygame.mixer.Sound('item.wav')
-speed = pygame.mixer.Sound('speed.wav')
+jetpack = pygame.mixer.Sound('jetpack.wav') 
+death = pygame.mixer.Sound('death.wav') 
+step = pygame.mixer.Sound('step.wav') 
+fall = pygame.mixer.Sound('falling.wav') 
+crash = pygame.mixer.Sound('crash.wav') 
+select = pygame.mixer.Sound('selection.wav') 
+itemsound = pygame.mixer.Sound('item.wav') 
+speed = pygame.mixer.Sound('speed.wav') 
 
 
 
@@ -81,18 +83,18 @@ class player (object):
         self.y = y
         self.width = width
         self.height = height
-        self.movelist = movelist
-        self.standimg = standimg
-        self.jumpimg = jumpimg
+        self.movelist = movelist    # Sprite images for movement
+        self.standimg = standimg    # Standing image of player
+        self.jumpimg = jumpimg      # Jumping image of player
         self.name = name
 
-        self.vel = worldvel+2
+        self.vel = worldvel+2  # Allows player to move in the world
         self.isJump = False
         self.jumpheight = 10
         self.jumpCount = self.jumpheight
         self.fallCount = 0
         self.left = False
-        self.step = 0
+        self.step = 0 
         self.move = False
         self.alive = True
 
@@ -100,7 +102,7 @@ class player (object):
         self.rightof = False
         self.ontop = False
         self.floorpos = pFloorpos
-        self.col = False
+        self.col = False    # Collision detection 
 
         self.speedboost = 0
         self.maxspeedboost = 6
@@ -109,8 +111,8 @@ class player (object):
 
     def moving(self, leftB, rightB, jumpB):
 
-        #default movement
         self.platform()
+        #default movement
         self.x -= worldvel
         self.collision()
 
@@ -127,7 +129,7 @@ class player (object):
                             self.y += 8
                     
             else:
-                if self.jumpCount < self.jumpheight:
+                if self.jumpCount < self.jumpheight:  
                     self.y = self.floorpos
                     self.isJump = False
                     self.jumpCount = self.jumpheight
@@ -136,10 +138,10 @@ class player (object):
         #controls
         if self.alive:
             if leftB and not self.rightof:
-                self.left = True
-                self.x -= self.vel
-                if not self.isJump:
-                    self.move = True
+                self.left = True  ## Can move left 
+                self.x -= self.vel ## Create an offset
+                if not self.isJump:  
+                    self.move = True  
                     step.play()
 
             elif rightB and not self.leftof:
@@ -168,13 +170,13 @@ class player (object):
             self.jumpCount -= 0.5
             jetpack.play()
 
-    def draw(self, window):
+    def draw(self, window): # Draw function used to implement sprite animation 
         if self.move:
-            if self.step + 1 > 16:
+            if self.step + 1 > 16: 
                 self.step = 0
             if not self.left: 
-                window.blit(self.movelist[self.step//2], (self.x,self.y))
-            else:
+                window.blit(self.movelist[self.step//2], (self.x,self.y))   # Integer division the number of steps to determine which sprite image to use 
+            else: 
                 window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))
             self.step += 1
         elif self.isJump and self.jumpCount > 0:
@@ -188,16 +190,16 @@ class player (object):
                     window.blit(pygame.transform.flip(self.jumpimg[0],1,0), (self.x,self.y))
                 else:
                     window.blit(pygame.transform.flip(self.jumpimg[1],1,0), (self.x,self.y))
-        else:
+        else:   # Player standing still
             if not self.left:
                 window.blit(self.standimg, (self.x,self.y))
             else:
                 window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
     
-    #should maybe move to item class, ideally use sprites instead
+   
     def collision(self):
 
-        #item
+        # Collision with item 
         for item in itemlist:
             if  item.x < self.x + self.width//2 < item.x + item.width:
                 if self.y+self.height >= item.y:
@@ -262,17 +264,17 @@ class element (object):
         self.height = height
 
 
-class backdrop (element):
+class backdrop (element):   # Class for dynamic background in both menu and gameplay
     
     def draw(self, window):
-        window.blit(pygame.image.load(self.img), (self.x,self.y))
-        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))
-        if self.x > -winwidth:
+        window.blit(pygame.image.load(self.img), (self.x,self.y)) 
+        window.blit(pygame.image.load(self.img), (self.x+winwidth,self.y))  # Creates 2 images, one following from the other. Allows for sidescrolling of background
+        if self.x > -winwidth: 
             self.x -= self.vel
         else:
             self.x = 0
         
-class displayObject (element):
+class displayObject (element):  
 
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
@@ -280,21 +282,21 @@ class displayObject (element):
 
 class Meteorite (displayObject):
 
-    inhole = False
+    inhole = False 
 
     def animate(self):
         #meteorite animation    
-        if self.y == winheight - 80 - 32:
-            crash.play()
+        if self.y == winheight - 80 - 32:  # Determines y postion to play meteorite sound
+            crash.play() # Plays crash sound
             
-        if self.y < winheight - 80:
+        if self.y < winheight - 80: 
             self.y += 32
         else:
             for hole in holelist:
-                if self.x > hole.x and self.x < hole.x+hole.width-self.width:
-                    self.y += 32
-                    self.inhole = True
-            self.img='meteoriteb.png'
+                if self.x > hole.x and self.x < hole.x+hole.width-self.width:   # Condition to check meteor is within hole 
+                    self.y += 32 # Allows meteor to fall through hole 
+                    self.inhole = True 
+            self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
     
 
 class Item (displayObject):
@@ -331,16 +333,16 @@ class Text: # creating the text class
 
 
 class scoreboard (object):
-    LENGTH = 4
+    LENGTH = 4      # 5 High scores 
 
     def __init__(self,scoreList):
         self.scoreList = scoreList
     
-    def addscore(self,newscore):
+    def addscore(self,newscore):    # Method that allows a new score to be added
         if newscore >= maxscore:
-            newscore = maxscore
-        self.scoreList += [newscore]
-        self.scoreList = sorted(self.scoreList,reverse=True)
+            newscore = maxscore     # If current score is the highest score
+        self.scoreList += [newscore]    # Adds new score to list
+        self.scoreList = sorted(self.scoreList,reverse=True)    # Sorted and reverse used to order scorelist in descending order
         self.scoreList.pop(self.LENGTH+1)
         if newscore in self.scoreList:
             return True
@@ -365,11 +367,11 @@ def introPlay():
         mask = pygame.Surface((winwidth, winheight))
         mask = mask.convert()
         mask.fill(black)
-        mask.set_alpha(255-10*incount)
-        window.blit(mask, (0, 0))
+        mask.set_alpha(255-10*incount)      # Gradually decreases transparency of black screen to load in logo 
+        window.blit(mask, (0, 0))           
         if incount == 20:
             introsound.play()
-            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))
+            presents = Text(winwidth//2, winheight//2+50, "presents", font, 15, (255,255,255))  # Text alignment for presents subtext 
             presents.show_text()
         pygame.display.update()
         if incount >= 60:
@@ -389,7 +391,7 @@ def startScreen():
     global second_menu
     global run
     while menu:
-        clock.tick(27)
+        clock.tick(27)  # Frame rate
 
         #leave game 
         for event in pygame.event.get():
@@ -502,16 +504,16 @@ def playerSelect():
     if instruc:
         instructionloop(twoplayer)
 
-def instructionloop(twoplayer):
+def instructionloop(twoplayer): # Instruction page before game starts
     trigger = True
     global run
     while trigger:
         clock.tick(27)
         title.draw(window)
         if twoplayer:
-            window.blit(info2, (0,0))
+            window.blit(info2, (0,0))       # If 2 player selected then loads info page for 2 players
         else:
-            window.blit(info1, (0,0))
+            window.blit(info1, (0,0))       # If 1 player selected then loads infopage for 1 player
         pygame.display.update()            
 
         events = pygame.event.get()
@@ -521,12 +523,12 @@ def instructionloop(twoplayer):
                 trigger = False
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    start.play()
+                if event.key == pygame.K_SPACE:     # User presses space to proceed to game 
+                    select.play()
                     trigger = False
 
 
-def pauseMenu():
+def pauseMenu():    # Pause Menu during gameplay 
     pause = True
     global run
     while pause:
@@ -538,7 +540,8 @@ def pauseMenu():
                 run = False
                 pause = False
         
-        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)
+        # Continue and Retry prompts 
+        contmsg = Text(winwidth//2, winheight//2, 'Continue [C]', font, 35, fontcolour)     
         retrymsg = Text(winwidth//2, winheight//1.5, 'Restart [R]', font, 35, fontcolour)
         contmsg.show_text()
         retrymsg.show_text()
@@ -699,7 +702,7 @@ def creditScene():
                     run = False
 
 
-def redrawGameWindow():
+def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
     lunar.draw(window)
@@ -854,7 +857,7 @@ while run:
     startScreen()
     playerSelect()
 
-    #randomly generate and move holes, meteors and items
+    #randomly generate and move holes, meteors and items. 
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,1,100)
     createAndMove('i',itemlist,1,300)
@@ -908,19 +911,19 @@ while run:
         if not player1.alive:
             if player2.alive:
                 winner = player2
-            gameovercount += 1
-        if not player2.alive:
-            if player1.alive:
-                winner = player1
-                gameovercount += 1
+            gameovercount += 1 
+        if not player2.alive: 
+            if player1.alive: 
+                winner = player1 
+                gameovercount += 1 
     
     #refresh screen
     if not menu and not second_menu and run:
-        redrawGameWindow()
-        pygame.display.update()
+        redrawGameWindow() 
+        pygame.display.update() 
 
     if end:
-        endScreen()
+        endScreen() 
     
     if endcredits:
         creditScene()
