@@ -31,6 +31,7 @@ winwidth = 800  # Display window width
 winheight = 400     # Display window height 
 
 window = pygame.display.set_mode((winwidth,winheight))
+#ground positions for gravity, floor level and platform level
 pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
@@ -88,9 +89,7 @@ select = pygame.mixer.Sound('selection.wav')
 itemsound = pygame.mixer.Sound('item.wav') 
 speed = pygame.mixer.Sound('speed.wav') 
 
-
-#player class that creates and moves players and manages their interaction with their surroundings
-class Player (object):
+class Player (object):      #player class that creates and moves players and manages their interaction with their surroundings
 
     def __init__(self,x,y,width,height,movelist,standimg,jumpimg,name):
         self.x = x
@@ -103,10 +102,10 @@ class Player (object):
         self.name = name
 
         self.vel = worldvel+2  # Allows player to move in the world
-        self.isJump = False
-        self.jumpheight = 10
-        self.jumpCount = self.jumpheight
-        self.fallCount = 0
+        self.isJump = False     #player (not) currently jumping
+        self.jumpheight = 10    #highest possible jump
+        self.jumpCount = self.jumpheight    #a backwards counter to limit the jump
+        self.fallCount = 0  #a counter that increases fall speed 
         self.left = False
         self.step = 0 
         self.move = False
@@ -123,7 +122,7 @@ class Player (object):
         self.maxjumpheight = 16     #max vel increase by item
 
 
-    def moving(self, leftB, rightB, jumpB):
+    def moving(self, leftB, rightB, jumpB):     #default movement and player controls
 
         self.platform(meteolist)
         #default movement
@@ -131,14 +130,14 @@ class Player (object):
         self.itemcollision()
         self.playerdeath()
 
-        #gravity 
+        #gravity simulation
         if self.alive:
             falldistance= (self.fallCount**2) * 0.25
             if self.y + falldistance <= self.floorpos:
                 if self.jumpCount == 0:
                     self.y += falldistance
                     self.fallCount += 0.5
-                else:
+                else:   #different fall from boulder so you can jump more fluently
                     if self.jumpCount == self.jumpheight and self.y < pFloorpos and not self.isJump:
                         if not self.ontop:
                             self.y += 8
@@ -153,8 +152,8 @@ class Player (object):
         #controls
         if self.alive:
             if leftB and not self.rightof:
-                self.left = True  ## Can move left 
-                self.x -= self.vel ## Create an offset
+                self.left = True  ## looks to the left
+                self.x -= self.vel ## move left
                 if not self.isJump:  
                     self.move = True  
                     step.play()
@@ -162,7 +161,7 @@ class Player (object):
             elif rightB and not self.leftof:
                 self.left = False
                 if self.x <= winwidth:
-                    self.x += self.vel
+                    self.x += self.vel #move right
                 if not self.isJump:
                     self.move = True
                     step.play()
@@ -178,7 +177,7 @@ class Player (object):
             else:
                 self.jump()
     
-    def jump (self):
+    def jump (self):    #player jump
 
         if self.jumpCount > 0:
             self.y -= 8
@@ -192,7 +191,7 @@ class Player (object):
             if not self.left: 
                 window.blit(self.movelist[self.step//2], (self.x,self.y))   # Integer division the number of steps to determine which sprite image to use 
             else: 
-                window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))
+                window.blit(pygame.transform.flip(self.movelist[self.step//2],1,0), (self.x,self.y))  #flip images when player faces the other way
             self.step += 1
         elif self.isJump and self.jumpCount > 0:
             if not self.left:
@@ -212,9 +211,8 @@ class Player (object):
                 window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
     
    
-    def itemcollision(self):
-
-        # Collision with item 
+    def itemcollision(self): # Collision with item and item actions
+        
         for item in itemlist:
             if  item.x < self.x + self.width//2 < item.x + item.width:
                 if self.y+self.height >= item.y:
@@ -229,14 +227,9 @@ class Player (object):
                     itemsound.play()
                     itemlist.pop(itemlist.index(item))   
 
-        if not self.col:
-            self.leftof = False
-            self.rightof = False
-        self.col = False
 
 
-    def playerdeath(self):
-        #player death
+    def playerdeath(self):      #death conditions: left of screen and falling into holes
         for hole in holelist:
             if self.x > hole.x + 5 and self.x < hole.x+hole.width-self.width and self.y >= winheight-91:
                 if self.alive:
@@ -250,9 +243,8 @@ class Player (object):
             self.alive = False
             self.y += 2000
 
-    def platform(self,objlist):
+    def platform(self,objlist):  # interaction with meteorite (other platforms could be added)
 
-        # interaction with meteor
         for meteo in objlist:
             if not meteo.inhole:
                 if meteo.x < self.x + self.width - 20 < meteo.x + meteo.width and self.y + self.height > meteo.y + 10:
@@ -268,19 +260,24 @@ class Player (object):
         if not self.ontop:
             self.floorpos = pFloorpos
         self.ontop = False
+
+        if not self.col:
+            self.leftof = False
+            self.rightof = False
+        self.col = False
         
-class Background (object):
+class Background (object):      #any visible object that it not the player
 
     def __init__(self,x,y,vel,img,width,height):
         
         self.x = x
         self.y = y
-        self.vel = vel
+        self.vel = vel  #speed/velocity
         self.img = img
         self.width = width
         self.height = height
         
-class Backdrop (Background):
+class Backdrop (Background):        #backdrops that continously scroll through the screen
     
     def draw(self, window):
         window.blit(pygame.image.load(self.img), (self.x,self.y))
@@ -290,12 +287,12 @@ class Backdrop (Background):
         else:
             self.x = 0
         
-class BackgroundObjects (Background):
+class BackgroundObjects (Background):   #object in environment
     # displayobjects
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-class Item (BackgroundObjects):
+class Item (BackgroundObjects): #item subclass (specific draw method)
 
     def draw(self,window,secimg):
         if (pygame.time.get_ticks()//500)%2: 
@@ -303,7 +300,7 @@ class Item (BackgroundObjects):
         else:
             window.blit(pygame.image.load(secimg),(self.x,self.y))
 
-class Meteorite (BackgroundObjects):
+class Meteorite (BackgroundObjects): #meteorite subclass (specific animation method (falling down))
 
     inhole = False 
 
@@ -344,7 +341,7 @@ class Text: # creating the text class
         else:
             return False
 
-class HighscoreBoard (object):
+class HighscoreBoard (object): #class for highscores so we can use pickle to save them into file
     LENGTH = 4      # 5 High scores 
 
     def __init__(self,scoreList):
@@ -367,7 +364,7 @@ class HighscoreBoard (object):
             self.scoreList[i] = 0
 
 
-def introPlay():
+def introPlay():        #intro for the game 
     incount = 0
     global intro
     global run
@@ -378,11 +375,11 @@ def introPlay():
 
         mask = pygame.Surface((winwidth, winheight))
         mask = mask.convert()
-        mask.fill(black)
+        mask.fill(black)        #shows a mask that gradually disappears to reveal the logo
         mask.set_alpha(255-10*incount)      # Gradually decreases transparency of black screen to load in logo 
         window.blit(mask, (0, 0))           
         if incount == 20:
-            introsound.play()
+            introsound.play() 
             presents = Text(winwidth//2, winheight//2+50, "presents", font, vsmallfont, (255,255,255))  # Text alignment for presents subtext 
             presents.show_text()
         pygame.display.update()
@@ -396,7 +393,7 @@ def introPlay():
                 intro = False
                 run = False
 
-def startScreen():
+def startScreen():      #shows the start screen (any key or mouse click to leave it)
     #game menu
     global menu
     global second_menu
@@ -410,11 +407,12 @@ def startScreen():
                 run = False
                 menu = False
         
+            #mouse click to leave
             if event.type == pygame.MOUSEBUTTONDOWN:
                 start.play()
                 menu = False
                 second_menu = True
-        
+            #...or key press to leave
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
@@ -423,7 +421,7 @@ def startScreen():
                     second_menu = True
                     menu = False
         title.draw(window)
-    
+        #shows the text
         text = Text(winwidth//2, winheight//3, 'MOON RUN', font, bigfont, fontcolour)
         text.show_text() 
         if (pygame.time.get_ticks()//500)%2:
@@ -819,20 +817,21 @@ def reset():        #resets all global game variables that have been changed dur
 """
 
 #class instances
-title = Backdrop(0,0,worldvel/2,'starry.png',800,400)
-bd1 = Backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
+title = Backdrop(0,0,worldvel/2,'starry.png',800,400)  #moving starry sky
+bd1 = Backdrop(0,0,worldvel/8,'hills_bg.png',800,400)   #hills in backgrounf
 player1 = Player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = Player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
 
 #start conditions
-itemlist=[]
+itemlist=[] #these lists collect objects so we can interact with all instances
 holelist=[]
 meteolist=[]
 playerlist = [player1]
-gameovercount = 0
+gameovercount = 0  #creates latency between player death and game over
 winner = 0
-playtime = 0
-speedcount = 0
+playtime = 0    #used for highscore (only in single player)
+speedcount = 0  #increments to speed up the game eventually
+#trigger variables for menus 
 intro = True
 end = False
 replay = False
