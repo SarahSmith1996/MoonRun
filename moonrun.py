@@ -725,6 +725,7 @@ def creditScene():      #creates a simple screen as a credit scene for the game
 def redrawGameWindow():     # Function used to draw game's objects  
     window.blit(night,(0,0)) #draws background (starry night)
     bd1.draw(window)
+    bd2.draw(window)
     pygame.draw.rect(window,(60,60,60),(0,winheight-20,winwidth,20)) #draws the floor
     for holes in holelist:
         holes.draw(window)
@@ -817,8 +818,9 @@ def reset():        #resets all global game variables that have been changed dur
 """
 
 #class instances
-title = Backdrop(0,0,worldvel/2,'starry.png',800,400)  #moving starry sky
-bd1 = Backdrop(0,0,worldvel/8,'hills_bg.png',800,400)   #hills in backgrounf
+title = Backdrop(0,0,worldvel//2,'starry.png',800,400)  #moving starry sky
+bd1 = Backdrop(0,0,worldvel//8,'hills_bg.png',800,400)   #hills in background
+bd2 = Backdrop(0,70,worldvel//4,'hills_fg.png',800,400)   #hills in background
 player1 = Player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = Player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
 
@@ -902,7 +904,8 @@ while run:
         speed.play()
     player1.vel = worldvel+2 + player1.speedboost
     player2.vel = worldvel+2 + player2.speedboost
-    bd1.vel = worldvel/8
+    bd1.vel = worldvel//8
+    bd2.vel = worldvel//4
 
     #game over conditions
     if gameovercount > 20:
