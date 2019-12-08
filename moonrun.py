@@ -309,7 +309,7 @@ class BackgroundObjects (Background):
     def draw(self,window):
         window.blit(pygame.image.load(self.img),(self.x,self.y))
 
-class Items (Background):
+class Item (BackgroundObjects):
 
     def draw(self,window,secimg):
         if (pygame.time.get_ticks()//500)%2: 
@@ -335,15 +335,6 @@ class Meteorite (BackgroundObjects):
                     self.inhole = True 
             self.img='meteoriteb.png'   # Loads image of meteorite making collision with the ground
     
-
-class Item (BackgroundObjects):
-
-    def draw(self,window,secimg):
-        if (pygame.time.get_ticks()//500)%2: 
-            window.blit(pygame.image.load(self.img),(self.x,self.y))
-        else:
-            window.blit(pygame.image.load(secimg),(self.x,self.y))
-
 class Text: # creating the text class 
     
     def __init__(self, x, y, text, font, fontsize, colour):
