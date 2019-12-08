@@ -22,10 +22,11 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 pygame.display.set_caption("Moon Run")
 clock = pygame.time.Clock()     # Used to track time in the game 
 worldvel = 8    # Velocity of sidescroll
-maxscore = 999999
+worldvel_increase = 4   #increase over time (after 500 ticks)
+maxscore = 999999 #maimum score you can reach
 
 
-#window
+#window properties
 winwidth = 800  # Display window width
 winheight = 400     # Display window height 
 
@@ -33,7 +34,8 @@ window = pygame.display.set_mode((winwidth,winheight))
 pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
-#random objects settings
+
+#random objects settings (change frequency and limit for randomly generated images)
 meteorite_limit = 1
 hole_limit = 1
 item_limit = 2
@@ -64,6 +66,7 @@ gameintro = pygame.image.load('intro.png')
 info1 = pygame.image.load('info1.png') 
 info2 = pygame.image.load('info2.png') 
 
+#imagelists for moving objects
 p1move = [pygame.image.load('p11.png'), pygame.image.load('p12.png'), pygame.image.load('p13.png'), pygame.image.load('p14.png'), pygame.image.load('p15.png'), pygame.image.load('p16.png'), pygame.image.load('p17.png'), pygame.image.load('p18.png')]
 p2move = [pygame.image.load('p21.png'), pygame.image.load('p22.png'), pygame.image.load('p23.png'), pygame.image.load('p24.png'), pygame.image.load('p25.png'), pygame.image.load('p26.png'), pygame.image.load('p27.png'), pygame.image.load('p28.png')]
 p1stand = pygame.image.load('p10.png')
@@ -86,7 +89,7 @@ itemsound = pygame.mixer.Sound('item.wav')
 speed = pygame.mixer.Sound('speed.wav') 
 
 
-
+#player class that creates and moves players and manages their interaction with their surroundings
 class Player (object):
 
     def __init__(self,x,y,width,height,movelist,standimg,jumpimg,name):
@@ -109,15 +112,15 @@ class Player (object):
         self.move = False
         self.alive = True
 
-        self.leftof = False
-        self.rightof = False
-        self.ontop = False
-        self.floorpos = pFloorpos
+        self.leftof = False     #collision to the left
+        self.rightof = False    #collision to the right
+        self.ontop = False      #player ontop of platform
+        self.floorpos = pFloorpos   #current 0-point for falling down (ground for gravity)
         self.col = False    # Collision detection 
 
-        self.speedboost = 0
-        self.maxspeedboost = 6
-        self.maxjumpheight = 16
+        self.speedboost = 0     #keeps track of item speed increase 
+        self.maxspeedboost = 6     #max jump increase by item
+        self.maxjumpheight = 16     #max vel increase by item
 
 
     def moving(self, leftB, rightB, jumpB):
@@ -750,7 +753,7 @@ def createAndMove(typ,lst,listLimit,randLimit):
     for obj in lst:
         obj.x -= worldvel
 
-def reset():
+def reset():        #
     global worldvel
     global holelist
     global meteolist
@@ -798,23 +801,20 @@ def reset():
     pygame.mixer.music.play(-1,0.0)
 
 
+"""
+---------GAME INITIALISATION-----------------------
+"""
+
 #class instances
 title = Backdrop(0,0,worldvel/2,'starry.png',800,400)
 bd1 = Backdrop(0,0,worldvel/8,'hills_bg.png',800,400)
-
 player1 = Player(winwidth//2,pFloorpos,71,71, p1move, p1stand, p1jump, 'Player 1')
 player2 = Player(winwidth*(2/3),pFloorpos,71,71, p2move, p2stand, p2jump, 'Player 2')
 
-
-
 #start conditions
-
-
-
 itemlist=[]
 holelist=[]
 meteolist=[]
-allobjlist = [itemlist,holelist,meteolist]
 playerlist = [player1]
 gameovercount = 0
 winner = 0
@@ -845,10 +845,16 @@ except EOFError:
 
 
 
-#main game loop
+"""
+----------MAIN GAME LOOP-----------------
+"""
 run = True
 while run:
+
+    #limits frame rate
     clock.tick(27)
+
+    #gets the key presses
     keys = pygame.key.get_pressed()
 
     #leave game 
@@ -856,6 +862,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+    # intro and start menus
     introPlay()
     startScreen()
     playerSelect()
@@ -876,10 +883,10 @@ while run:
         select.play()
         pauseMenu()
 
-    #speed up
+    #speed up the game after 500 ticks
     speedcount += 1
     if speedcount % 500 == 0:
-        worldvel += 4
+        worldvel += worldvel_increase
         speed.play()
     player1.vel = worldvel+2 + player1.speedboost
     player2.vel = worldvel+2 + player2.speedboost
@@ -889,6 +896,7 @@ while run:
     if gameovercount > 20:
         end = True
     
+    #manages scores and game over in single player mode
     if not twoplayer:
         if not player1.alive:
             myscore = playtime
@@ -898,7 +906,7 @@ while run:
                 highget = False
         if player1.alive:
             playtime += 1 
-
+    #...and twoplayer mode
     else:
         if not player1.alive:
             if player2.alive:
@@ -909,21 +917,22 @@ while run:
                 winner = player1 
                 gameovercount += 1 
     
-    #refresh screen
+    #refresh screen (but not during menus)
     if not menu and not second_menu and run:
-
-        
+        #draws everything on screen
         redrawGameWindow() 
         if not twoplayer:
+            #creates the timer on screen in single player mode
             scoreshow = Text(winwidth//2, 15, "Score", font, vsmallfont, fontcolour)
             timer = Text(winwidth//2, 40, str(playtime).zfill(4), font, smallfont, fontcolour)
             timer.show_text()
             scoreshow.show_text()
         pygame.display.update() 
 
+    #game over menu
     if end:
         endScreen() 
-    
+    #end credits
     if endcredits:
         creditScene()
     
