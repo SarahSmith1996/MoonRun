@@ -1,12 +1,29 @@
-Game Description: 
-
-
-MoonRun is a 2D side scrolling sci-fi arcade game developed by coolPeeps1. Set on the moon, the player takes the role of an astronaut who is tasked to avoid craters, which the player can fall through, and meteorites which present as an obstacle to the player. The player can utilise their jetpack to avoid craters and meteorites. Additionally, in-game items such as jetpack and speed boosts can be collected, providing enhancements to the player. The game is controlled using the arrow keys in singleplayer mode. The world is constantly moving hence if the player is too slow and out of frame during gameplay, the game is over. Plus, if the player is too fast and out of frame, they run the risk of falling into an unseen crater. The objective for the player is to survive as long as 
-possible, as the score increases with time in singleplayer. The game keeps track of the five highest scores as it features an in-game leaderboard. The game is accompanied by an 8-bit style soundtrack and art style, reminiscent of early NES and arcade games. Please see the inspirations section for further clarification. The game also features a 2-player mode. The 2nd player is controlled using the W, A and S keys. This plays identically to the singleplayer mode, except there is no score tracker. The winner is determined by the last player to survive. 
-
-
-Inspirations: 
-
-
-The concept of MoonRun was inspired by the gameplay in the ìDinosaur Gameî featured in Google Chrome. To clarify, we did not refer to any of its source game code. To get to know some of the functionalities of pygame, we referred to a pygame tutorial by Tech with Tim 
-(https://www.youtube.com/watch?v=i6xMBig-pP4&t=620s). From it, we were inspired to create lists to keep track of multiple object instances and iterate through them and implement a jump with a quadratic function. As our game is set in space and we wanted to use jetpacks, we had to remodel the jump entirely though via a linear rise followed by a ëquadraticí fall. Also, we used keyboard input as outlined in the tutorial. All sprites were created and drawn by us and there is no reuse of any game code. The 8-bit style music featured in the game is free to use under Creative Commons Attribution license and all sounds were taken from the free VST library Bitkits. The music is free to use under Creative Commons Attribution license and all sounds (except for the jetpack sound which we created ourselves with a white noise generator) were taken from the free VST library Bitkits (http://www.vstplanet.com/News/2013/Bitkits.htm).
+Game Description 
+MoonRun is a 2D side scrolling sci-fi arcade game developed by coolPeeps1. Set on the moon, the 
+player takes the role of an astronaut who is tasked to avoid craters, which the player can fall 
+through, and meteorites which present as an obstacle to the player. The player can utilise their 
+jetpack to avoid craters and meteorites. Additionally, in-game items such as jetpack and speed 
+boosts can be collected, providing enhancements to the player. The game is controlled using the 
+arrow keys in singleplayer mode. The world is constantly moving hence if the player is too slow and 
+out of frame during gameplay, the game is over. Plus, if the player is too fast and out of frame, they 
+run the risk of falling into an unseen crater. The objective for the player is to survive as long as 
+possible, as the score increases with time in singleplayer. The game keeps track of the five highest 
+scores as it features an in-game leaderboard. The game is accompanied by an 8-bit style soundtrack 
+and art style, reminiscent of early NES and arcade games. Please see the inspirations section for 
+further clarification. The game also features a 2-player mode. The 2nd player is controlled using the 
+W, A and S keys. This plays identically to the singleplayer mode, except there is no score tracker. The 
+winner is determined by the last player to survive. 
+Inspirations 
+The concept of MoonRun was inspired by the gameplay in the “Dinosaur Game” featured in Google 
+Chrome. To clarify, we did not refer to any of its source game code. To get to know some of the 
+functionalities of pygame, we referred to a pygame tutorial by Tech with Tim 
+(https://www.youtube.com/watch?v=i6xMBig-pP4&t=620s). From it, we were inspired to create lists 
+to keep track of multiple object instances and iterate through them and implement a jump with a 
+quadratic function. As our game is set in space and we wanted to use jetpacks, we had to remodel 
+the jump entirely though via a linear rise followed by a ‘quadratic’ fall. Also, we used keyboard input 
+as outlined in the tutorial. All sprites were created and drawn by us and there is no reuse of any 
+game code. The 8-bit style music featured in the game is free to use under Creative Commons 
+Attribution license and all sounds were taken from the free VST library Bitkits. The music is free to 
+use under Creative Commons Attribution license and all sounds (except for the jetpack sound which 
+we created ourselves with a white noise generator) were taken from the free VST library Bitkits 
+(http://www.vstplanet.com/News/2013/Bitkits.htm).
