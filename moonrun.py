@@ -34,7 +34,7 @@ pFloorpos = winheight-87
 pOntoppos = winheight-87-64
 
 #fonts
-font = 'pixel.otf' 
+font = 'font.otf' 
 
 #Colours
 fontcolour = pygame.Color(255,201,14)   # Yellow font colour 
@@ -638,8 +638,8 @@ def endScreen():
         title.draw(window)
         gomsg = Text(winwidth//2, 100, "Game Over", font, 55, fontcolour)
         gomsg.show_text()
-        goprompt = Text(winwidth//2, 350, "Restart [R]                           High Score[H]\
-                                       Main Menu[E]                           Exit[ESC]", font, 15, fontcolour)
+        goprompt = Text(winwidth//2, 350, \
+            "Restart [R]        High Score[H]        Main Menu[E]        Exit[ESC]", font, 15, fontcolour)
         goprompt.show_text()
             
        
@@ -893,12 +893,12 @@ while run:
     introPlay()
     startScreen()
     playerSelect()
-
+    """
     #randomly generate and move holes, meteors and items. 
     createAndMove('h',holelist,1,50)
     createAndMove('m',meteolist,1,100)
     createAndMove('i',itemlist,1,300)
-        
+    """       
     
     #player control
     player1.moving(keys[pygame.K_LEFT],keys[pygame.K_RIGHT],keys[pygame.K_UP])
