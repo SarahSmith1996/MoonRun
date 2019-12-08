@@ -125,7 +125,8 @@ class Player (object):
         self.platform(meteolist)
         #default movement
         self.x -= worldvel
-        self.collision()
+        self.itemcollision()
+        self.playerdeath()
 
         #gravity 
         if self.alive:
@@ -208,7 +209,7 @@ class Player (object):
                 window.blit(pygame.transform.flip(self.standimg,1,0), (self.x,self.y))
     
    
-    def collision(self):
+    def itemcollision(self):
 
         # Collision with item 
         for item in itemlist:
@@ -230,6 +231,8 @@ class Player (object):
             self.rightof = False
         self.col = False
 
+
+    def playerdeath(self):
         #player death
         for hole in holelist:
             if self.x > hole.x + 5 and self.x < hole.x+hole.width-self.width and self.y >= winheight-91:
