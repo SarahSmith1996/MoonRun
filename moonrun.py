@@ -48,7 +48,7 @@ hole_limit = 1
 item_limit = 2
 meteorite_freq = 120
 hole_freq = 50
-item_freq = 350
+item_freq = 450
 
 #fonts
 font = 'font.ttf' 
@@ -755,7 +755,7 @@ def createAndMove(typ,lst,listLimit,randLimit):     #creates objects (holes,item
             x = BackgroundObjects(winwidth+200,winheight-30,worldvel,'bigcrater.png',250,30)
         elif typ == "m":
             x = Meteorite(winwidth,0,worldvel,'meteorite.png',64,64)
-            fall.play()
+            pygame.mixer.Channel(1).play(fall)      #other channel so it doesn't get drowned out
         elif typ == "i":
             if pygame.time.get_ticks()%2 == 0:
                 x = Item(winwidth,winheight-60,worldvel,'item1.png',32,32)
@@ -889,8 +889,10 @@ while run:
    
     #randomly generate and move holes, meteors and items. 
     createAndMove('h',holelist,hole_limit,hole_freq)
-    createAndMove('m',meteolist,meteorite_limit,meteorite_freq)
-    createAndMove('i',itemlist,item_limit,item_freq)
+    if itemlist == []:      #so items don't spawn in front of meteorites
+        createAndMove('m',meteolist,meteorite_limit,meteorite_freq)
+    if meteolist == []:     #so items don't spawn in front of meteorites
+        createAndMove('i',itemlist,item_limit,item_freq)
         
     
     #player control
